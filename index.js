@@ -28,37 +28,36 @@ var options = {
             grant_type: 'client_credentials'
         })
     });
-    
+
     // console.log(resp)
-    
+
     if (!resp.ok) {
         throw new Error(resp.statusText);
     }
-    
+
     let data = await resp.json();
     console.log(data.access_token);
     let accesstoken = data.access_token;
 
+    console.log({accesstoken});
 
     request({
         method: 'POST',
         uri: 'https://api.probit.com/api/exchange/v1/new_order',
-        multipart: [
-          {
-            'content-type': 'application/json',
-            authorization: `Bearer ${accesstoken}`,
-            body: JSON.stringify({
-                "market_id":"BTC-USDT",
-                "type":"limit",
-                "side":"sell",
-                "time_in_force":"gtc",
-                "limit_price":"3772.4",
-                "quantity":"240"
-            })
-          }
-        ],
+        headers: {
+          'content-type': 'application/json',
+          authorization: `Bearer ${accesstoken}`,
+        },
+        body: JSON.stringify({
+            "market_id":"BTC-USDT",
+            "type":"limit",
+            "side":"sell",
+            "time_in_force":"gtc",
+            "limit_price":"3772.4",
+            "quantity":"240"
+        })
         // alternatively pass an object containing additional options
-        
+
       },
       function (error, response, body) {
         if (error) {
@@ -66,7 +65,7 @@ var options = {
         }
         console.log('Upload successful!  Server responded with:', body);
       })
-    
+
 })();
 
 
