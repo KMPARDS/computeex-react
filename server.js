@@ -4,10 +4,12 @@ const session = require('express-session');
 const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const controllerApis = require('./controllers/controllers');
+const cors = require('cors');
 
 const app = express();
 
 app.use(helmet());
+app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {

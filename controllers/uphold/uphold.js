@@ -3,6 +3,15 @@ const router = express.Router();
 const { randomBytes } = require('crypto');
 const HTTP_STATUS = require('http-response-status-codes');
 const { successObj, errorObj } = require('../../utils');
+const upholdModel = require('../../models/uphold/uphold');
+
+const { default: SDK } = require('@uphold/uphold-sdk-javascript');
+const sdk = new SDK({
+  baseUrl: process.env.UPHOLD_BASE_URL,
+  clientId: process.env.UPHOLD_CLIENT_ID,
+  clientSecret: process.env.UPHOLD_CLIENT_SECRET
+});
+
 
 const requiresLogin = (req, res, next) => {
   if(!req.session.upholdAccessToken) {
@@ -29,11 +38,27 @@ router.post('/record-wallet-address', (req, res) => {
 });
 
 router.get('/generate-state', (req, res) => {
-  randomBytes(32, (err, buffer) => {
+  randomBytes(16, (err, buffer) => {
+    req.session.state = buffer.toString('hex');
+    console.log({state: req.session.state});
     res.status(HTTP_STATUS.SUCCESS.OK).json(
-      successObj(buffer.toString('base64'))
+      successObj(req.session.state)
     );
   });
+});
+
+router.post('/login', async(req, res) => {
+  console.log({code: req.body.code});
+  const auth = await sdk.authorize(req.body.code);
+  console.log({auth});
+  req.session.accessToken = auth.access_token;
+  await sdk.setToken({
+    access_token: req.session.accessToken
+  });
+  const user = await sdk.getMe();
+  const response = await upholdModel.createUser(user, req.session.walletAddress || '0x'+'0'.repeat(40));
+
+  res.send(req.session.accessToken);
 });
 
 module.exports = router;
