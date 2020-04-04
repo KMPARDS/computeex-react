@@ -20,7 +20,9 @@ app.use((req, res, next) => {
 });
 
 app.use(session({
-  secret: process.env.SESSION_SECRET || '123456789'
+  secret: process.env.SESSION_SECRET || '123456789',
+  resave: true,
+  saveUninitialized: true,
 }));
 
 app.get('/ping', (req, res) => {
