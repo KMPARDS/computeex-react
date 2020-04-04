@@ -16,5 +16,8 @@
     "express-session": "^1.17.0",
     "helmet": "^3.22.0",
     "http-response-status-codes": "^1.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
   }
 }

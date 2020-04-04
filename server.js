@@ -2,8 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
 const helmet = require('helmet');
-const upholdApis = require('./apis/uphold');
 const bodyParser = require('body-parser');
+const controllerApis = require('./controllers/controllers');
 
 const app = express();
 
@@ -33,7 +33,7 @@ app.get('/ping', (req, res) => {
   res.send('Pong' + (++req.session.count));
 });
 
-app.use('/uphold', upholdApis);
+app.use('/api', controllerApis);
 
 const port = process.env.PORT || 3001;
 app.listen(port, () => console.log(`Listening on PORT ${port}`));
