@@ -1,4 +1,4 @@
-const { toRfc4122, fromRfc4122 } = require('../../utils');
+const { toRfc4122, fromRfc4122, isHexString } = require('../../utils');
 const queryPromise = require('../connection')({
   host: 'localhost',
   database: process.env.UPHOLD_DATABASE_NAME || 'db',
@@ -6,18 +6,61 @@ const queryPromise = require('../connection')({
   password: process.env.UPHOLD_DATABASE_PASSWORD || 'Qwertyuiop'
 });
 
-const doesUserExist = async (upholdUserId) => {
+/// @dev helper model method
+const doesUserExist = async(upholdUserId) => {
   const response = await queryPromise(`SELECT userId from users WHERE userId = ${fromRfc4122(upholdUserId)}`);
   return !!response.length;
 };
 
-module.exports.createUser = async (upholdUserObject, walletAddress = '0x'+'0'.repeat(40)) => {
+/// @dev helper model method
+const insertUser = async(upholdUserObject, walletAddress) => {
+  if(walletAddress) {
+    await queryPromise(`INSERT INTO users (userId, upholdUserObject, walletAddress) VALUES (${fromRfc4122(upholdUserObject.id)}, '${JSON.stringify(upholdUserObject)}', ${walletAddress})`);
+  } else {
+    await queryPromise(`INSERT INTO users (userId, upholdUserObject) VALUES (${fromRfc4122(upholdUserObject.id)}, ?`, [JSON.stringify(upholdUserObject)]);
+  }
+};
+
+/// @dev helper model method
+const updateUser = async(upholdUserObject, walletAddress) => {
+  if(walletAddress) {
+    await queryPromise(`UPDATE users SET upholdUserObject = ?, walletAddress = ${walletAddress} WHERE userId = ${fromRfc4122(upholdUserObject.id)}`, [JSON.stringify(upholdUserObject)]);
+  } else {
+    await queryPromise(`UPDATE users SET upholdUserObject = ? WHERE userId = ${fromRfc4122(upholdUserObject.id)}`, [JSON.stringify(upholdUserObject)]);
+  }
+}
+
+/// @dev used to query wallet address
+const getWalletAddress = async(userId) => {
+  const response = await queryPromise(`SELECT walletAddress from users WHERE userId = ${fromRfc4122(userId)}`);
+  if(!response.length) return null;
+  return '0x' + response[0].walletAddress.toString('hex');
+}
+
+/// @dev used to update ethereum walletAddress
+const updateWalletAddress = async(userId, walletAddress) => {
+  if(!isHexString(walletAddress)) throw new Error('Invalid Hex String: ' + walletAddress);
+
+  await queryPromise(`UPDATE users SET walletAddress = ${walletAddress} WHERE userId = ${fromRfc4122(userId)}`);
+};
+
+/// @dev used to store user updated info when user logins
+const insertOrUpdateUser = async(upholdUserObject, walletAddress) => {
   if(typeof upholdUserObject !== 'object') throw new Error('Input should be object');
   if(!upholdUserObject.id) throw new Error('User id is not present');
+  if(!isHexString(walletAddress)) walletAddress = null;
   if(!await doesUserExist(upholdUserObject.id)) {
-    const response = await queryPromise(`INSERT INTO users (userId, upholdUserObject, walletAddress) VALUES (${fromRfc4122(upholdUserObject.id)}, '${JSON.stringify(upholdUserObject)}', ${walletAddress})`);
-    console.log(response);
-    return true;
+    // insert into the database
+    await insertUser(upholdUserObject, walletAddress);
+  } else {
+    // update user details in the database
+    // query if wallet address is present
+    const dbWalletAddress = await getWalletAddress(upholdUserObject.id);
+    console.log({dbWalletAddress});
+    await updateUser(upholdUserObject, walletAddress && dbWalletAddress !== walletAddress ? walletAddress : null);
   }
-  return false;
 }
+
+module.exports = {
+  insertOrUpdateUser, getWalletAddress, updateWalletAddress
+};

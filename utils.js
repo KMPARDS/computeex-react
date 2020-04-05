@@ -20,3 +20,9 @@ module.exports.fromRfc4122 = rfc4122 => {
   const hex = rfc4122.split('-').join('');
   return '0x' + Buffer.from(hex, 'hex').toString('hex');
 }
+
+module.exports.isHexString = str => {
+  if(typeof str !== 'string' || str.slice(0,2) !== '0x') return false;
+  const regexp = /^[0-9a-fA-F]+$/;
+  return regexp.test(str.slice(2));
+}
