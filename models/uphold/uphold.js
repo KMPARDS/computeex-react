@@ -1,12 +1,10 @@
 const { toRfc4122, fromRfc4122 } = require('../../utils');
-const options = {
+const queryPromise = require('../connection')({
   host: 'localhost',
   database: process.env.UPHOLD_DATABASE_NAME || 'db',
   user: process.env.UPHOLD_DATABASE_USER || 'root',
   password: process.env.UPHOLD_DATABASE_PASSWORD || 'Qwertyuiop'
-};
-console.log(options);
-const queryPromise = require('../connection')(options);
+});
 
 const doesUserExist = async (upholdUserId) => {
   const response = await queryPromise(`SELECT userId from users WHERE userId = ${fromRfc4122(upholdUserId)}`);
