@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { InputGroup, FormControl, Dropdown, DropdownButton } from 'react-bootstrap';
+import Account from './Account/Account';
 import axios from '../../axios';
 
 const { apiBaseUrl } = require('../../env');
@@ -79,13 +80,6 @@ export default class extends Component {
       const response = await axios.get(apiBaseUrl+'/probit/es-btc-sell-orders');
       this.setState({ probitOrderBook: response.data });
     })();
-
-    (async() => {
-      try {
-        const response = await axios.get(apiBaseUrl + '/uphold/user');
-        window.user = response.data.response;
-      } catch (error) {}
-    })();
   };
 
   componentWillUnmount = () => {
@@ -154,7 +148,7 @@ export default class extends Component {
                   as={InputGroup.Append}
                   variant="outline-secondary"
                   title={this.state.currencies[this.state.fromCurrency].symbol}
-                  className="large"
+                  className="large light"
                   alignRight
                 >
                   <div style={{padding: '0 10px 5px'}}>
@@ -180,17 +174,21 @@ export default class extends Component {
               <span className="es-amount-number">{this.state.esAmount || 0}</span><span className="es-amount-symbol">ES</span>
                 (as on live Probit Exchange)
               </p>
-              <hr color="#fff" />
+              <div style={{textAlign: 'center', paddingTop: '10px'}}>
               {!this.state.userLoggedIn ? <>
-                <p>To proceed, connect your Uphold Account with ComputeEx.</p>
-                <img onClick={async() => {
-                  const response = await axios.get(apiBaseUrl+'/uphold/generate-state');
-                  window.open("https://sandbox.uphold.com/authorize/3c0d16ce2706bc3c9923b9718c1432f2c7b25a12?scope=accounts:read%20cards:read%20cards:write%20transactions:deposit%20transactions:read%20transactions:transfer:application%20transactions:transfer:others%20transactions:transfer:self%20transactions:withdraw%20transactions:commit:otp%20user:read&state="+response.data.response,"_self");
-                  }} src="/img/connect_with_uphold.svg" />
-                </> : <a onClick={() => this.props.history.push('/uphold/account')} className="logibtn gradient-btn cursor-pointer">Proceed to your account page</a>}
+                <hr color="#fff" />
+                  <p>To proceed, connect your Uphold Account with ComputeEx.</p>
+                  <img onClick={async() => {
+                    const response = await axios.get(apiBaseUrl+'/uphold/generate-state');
+                    window.open("https://sandbox.uphold.com/authorize/3c0d16ce2706bc3c9923b9718c1432f2c7b25a12?scope=accounts:read%20cards:read%20cards:write%20transactions:deposit%20transactions:read%20transactions:transfer:application%20transactions:transfer:others%20transactions:transfer:self%20transactions:withdraw%20transactions:commit:otp%20user:read&state="+response.data.response,"_self");
+                    }} src="/img/connect_with_uphold.svg"
+                  />
+                </> : <a className="btn-custom-light" style={{marginTop:'10px', display: 'block'}}>Buy ES</a>}
+                </div>
               </div>
             </div>
           </div>
+          {this.state.userLoggedIn ? <Account /> : null}
         </div>
       </div>
       </>

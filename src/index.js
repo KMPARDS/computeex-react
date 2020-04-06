@@ -20,6 +20,10 @@ window.lessDecimals = (str, decimals = 2) => {
   }
   return lessDecimals.join('.');
 }
+window.qs = (jsonData = {}) =>
+  Object.entries(jsonData)
+    .map(x => `${encodeURIComponent(x[0])}=${encodeURIComponent(x[1])}`)
+    .join('&');
 
 ReactDOM.render(
   <React.StrictMode>

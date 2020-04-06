@@ -3,7 +3,7 @@ const router = express.Router();
 const { randomBytes } = require('crypto');
 const axios = require('axios');
 const HTTP_STATUS = require('http-response-status-codes');
-const { successObj, errorObj } = require('../../utils');
+const { successObj, errorObj, isHexString } = require('../../utils');
 const upholdModel = require('../../models/uphold/uphold');
 
 const { default: SDK } = require('@uphold/uphold-sdk-javascript');
@@ -46,7 +46,7 @@ router.post('/record-wallet-address', async(req, res) => {
   if(req.session.upholdUserId) {
     await upholdModel.updateWalletAddress(
       req.session.upholdUserId,
-      req.session.walletaAddress
+      req.session.walletAddress
     );
   }
   res.status(HTTP_STATUS.SUCCESS.OK).json(

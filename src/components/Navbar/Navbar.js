@@ -10,7 +10,7 @@ export default class extends Component {
 
   intervalId = null;
 
-  componentDidMount = async() => {
+  componentDidMount = () => {
     this.intervalId = setInterval(() => {
       if(window.user && !this.state.userLoggedIn) {
         this.setState({ userLoggedIn: true });
@@ -19,21 +19,30 @@ export default class extends Component {
       }
     }, 100);
 
-    const code = window.getQueryParameter('code');
-    const state = window.getQueryParameter('state');
+    (async() => {
+      try {
+        const response = await axios.get(apiBaseUrl + '/uphold/user');
+        window.user = response.data.response;
+      } catch (error) {}
+    })();
 
-    if(code && state) {
-      const qs = (jsonData = {}) =>
-        Object.entries(jsonData)
-          .map(x => `${encodeURIComponent(x[0])}=${encodeURIComponent(x[1])}`)
-          .join('&');
-      const response = await axios.post(apiBaseUrl+'/uphold/login', qs({code, state}), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+    (async() => {
+      const code = window.getQueryParameter('code');
+      const state = window.getQueryParameter('state');
+
+      if(code && state) {
+        try {
+          const response = await axios.post(apiBaseUrl+'/uphold/login', window.qs({code, state}), {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
+          });
+          window.user = response.data.response;
+        } catch (error) {
+          alert('Error: Your login token from Uphold is not valid. Please try again');
         }
-      });
-      alert(response.data);
-    }
+      }
+    })();
   };
 
   componentWillUnmount = () => {
@@ -67,7 +76,7 @@ export default class extends Component {
             </div>
             <div className="col-4 col-lg-2 text-right">
               {!this.state.userLoggedIn
-                ? <a onClick={() => this.props.history.push('/uphold')} className="logibtn gradient-btn">Login</a>
+                ? <a onClick={() => this.props.history.push('/uphold')} className="btn-custom-light">Login</a>
                 : <span onClick={() => this.props.history.push('/uphold/account')} className="cursor-pointer">Welcome {window.user.firstName}</span>}
             </div>
           </div>

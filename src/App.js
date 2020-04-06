@@ -4,7 +4,6 @@ import Navbar from './components/Navbar/Navbar';
 import Footer from './components/Footer/Footer';
 import Home from './components/Home/Home';
 import Uphold from './components/Uphold/Uphold';
-import UpholdAccount from './components/Uphold/Account/Account';
 
 function App() {
   return (
@@ -13,7 +12,6 @@ function App() {
       <Switch>
         <Route path="/" exact component={Home} />
         <Route path="/uphold" exact component={Uphold} />
-        <Route path="/uphold/account" exact component={UpholdAccount} />
       </Switch>
       <Route path="/*" component={Footer} />
     </BrowserRouter>

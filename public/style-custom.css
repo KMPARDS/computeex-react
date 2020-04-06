@@ -11,6 +11,7 @@
 
 .form-input.light {
   background: #fff3;
+  color: #fff;
 }
 
 .form-input.dark {
@@ -19,6 +20,10 @@
 
 .form-input.large, .input-group-append.large button {
   font-size: 1.5rem;
+}
+
+.input-group-append.light button {
+  color: #fff;
 }
 
 .input-group-append button {
@@ -42,14 +47,29 @@ hr {
 }
 
 .dashboard-container {
-  background-color: #fff;
+  background-color: #fff4;
   color: #000;
   margin-top: 2rem;
   padding: 2rem;
   border-radius: 0.5rem;
 }
 
-.dashboard-container h1, h2, h3, h4, h5, h6 {
-  color: #000;
+.dashboard-container {
+  color: #fff;
   font-weight: 700;
+}
+
+.dashboard-container input {
+  color: #000;
+}
+
+.welcome-text {
+  color: #fff;
+}
+
+.btn-custom-light {
+  background: white;
+  padding: 1rem;
+  border-radius: 4px;
+  color: #111 !important;
 }
