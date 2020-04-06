@@ -57,7 +57,7 @@ router.post('/record-wallet-address', async(req, res) => {
 router.get('/wallet-address', requiresLogin, async(req, res) => {
   if(!req.session.walletAddress) {
     const walletAddress = await upholdModel.getWalletAddress(req.session.upholdUserId);
-    if(walletAddress !== '0x'+'0'.repeat(40)) {
+    if(walletAddress !== null) {
       req.session.walletAddress = walletAddress;
     } else {
       return res.status(HTTP_STATUS.SUCCESS.OK).json(
@@ -147,23 +147,46 @@ router.get('/cards', requiresLogin, async(req, res) => {
   );
 });
 
-router.post('/transact', requiresLogin, async(req, res) => {
+router.post('/create-transaction', requiresLogin, async(req, res) => {
   const sdk = generateSdk();
   await sdk.setToken({
     access_token: req.session.upholdAccessToken
   });
   const user = await sdk.getMe();
 
-  const output = await sdk.createCardTransaction(
+  const { cardId, amount, currency } = req.body;
+
+  const [from, to] = [
+    cardId,
+    process.env.UPHOLD_PAYMENT_RECEIVING_CARD
+  ];
+
+  const upholdTransactionObject = await sdk.createCardTransaction(
     from,
     {
-      amount: '0.00005',
-      currency: 'BTC',
+      amount: amount,
+      currency: currency,
       destination: to,
-      message: 'Buy BTC',
+      message: 'Buy ES',
       // securityCode
-    },
-    true
+    }
+  );
+
+  console.log(upholdTransactionObject);
+
+  // generate ES amount
+
+  const args = {
+    userId: req.session.upholdUserId,
+    upholdTransactionObject,
+    esAmount: 0,
+    walletAddress: await upholdModel.getWalletAddress()
+  };
+
+  await upholdModel.insertTransaction(...Object.values(args));
+
+  res.status(HTTP_STATUS.SUCCESS.OK).json(
+    successObj(upholdTransactionObject.id)
   );
 });
 

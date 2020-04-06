@@ -7,7 +7,7 @@ CREATE TABLE users (
   -- JSON Stringified uphold user object
   upholdUserObject TEXT,
   -- wallet address of the user
-  walletAddress BINARY(20) NOT NULL,
+  walletAddress BINARY(20),
   createdAt TIMESTAMP DEFAULT NOW(),
   updatedAt TIMESTAMP DEFAULT NOW()
 );
@@ -15,12 +15,15 @@ CREATE TABLE users (
 CREATE TABLE transfers (
   -- UUID compliant with RFC 4122
   transactionId BINARY(16) PRIMARY KEY NOT NULL,
+  -- JSON Stringified uphold user object
+  upholdTransactionObject TEXT,
   -- UUID compliant with RFC 4122
   userId BINARY(16) UNIQUE NOT NULL,
   btcAmount FLOAT,
-  -- esAmount is 32 bytes
-  esAmount BINARY(32),
-  status ENUM('pending', 'processed'),
+  esAmount FLOAT,
+  walletAddress BINARY(20) NOT NULL,
+  status ENUM('pending', 'received', 'processed'),
+  -- transaction of processed ES withdrawal
   txHash BINARY(32),
   createdAt TIMESTAMP DEFAULT NOW(),
   updatedAt TIMESTAMP DEFAULT NOW(),

@@ -93,7 +93,7 @@ export default class extends Component {
                   this.props.selectEsFromBalance(cardIndex);
                   window.scrollTo(0, 0);
                 }}
-              >Click to use this currency</button>
+              >Click to use <u>Available</u></button>
             </div>
           </div>
         ))}
