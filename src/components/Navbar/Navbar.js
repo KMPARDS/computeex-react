@@ -1,11 +1,24 @@
 import React, { Component } from 'react';
-import axios from 'axios';
-axios.defaults.withCredentials = true
+import axios from '../../axios';
 
 const { apiBaseUrl } = require('../../env');
 
 export default class extends Component {
+  state = {
+    userLoggedIn: false
+  };
+
+  intervalId = null;
+
   componentDidMount = async() => {
+    this.intervalId = setInterval(() => {
+      if(window.user && !this.state.userLoggedIn) {
+        this.setState({ userLoggedIn: true });
+      } else if(!window.user && this.state.userLoggedIn) {
+        this.setState({ userLoggedIn: false });
+      }
+    }, 100);
+
     const code = window.getQueryParameter('code');
     const state = window.getQueryParameter('state');
 
@@ -21,7 +34,12 @@ export default class extends Component {
       });
       alert(response.data);
     }
-  }
+  };
+
+  componentWillUnmount = () => {
+    clearInterval(this.intervalId);
+  };
+
   render() {
     return (
       <div className="header-area wow fadeInDown header-absolate" id="nav" data-0="position:fixed;" data-top-top="position:fixed;top:0;" data-edge-strategy="set">
@@ -48,7 +66,9 @@ export default class extends Component {
               </div>
             </div>
             <div className="col-4 col-lg-2 text-right">
-              <a href="#" className="logibtn gradient-btn">login</a>
+              {!this.state.userLoggedIn
+                ? <a onClick={() => this.props.history.push('/uphold')} className="logibtn gradient-btn">Login</a>
+                : <span onClick={() => this.props.history.push('/uphold/account')} className="cursor-pointer">Welcome {window.user.firstName}</span>}
             </div>
           </div>
         </div>

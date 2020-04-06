@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { randomBytes } = require('crypto');
+const axios = require('axios');
 const HTTP_STATUS = require('http-response-status-codes');
 const { successObj, errorObj } = require('../../utils');
 const upholdModel = require('../../models/uphold/uphold');
@@ -23,17 +24,49 @@ const requiresLogin = (req, res, next) => {
   }
 };
 
+router.get('/ticker', async(req,res) => {
+  const response = await axios.get('https://api.uphold.com/v0/ticker/BTC');
+  res.send(response.data);
+});
+
 // expects user to send walletAddress in body
-router.post('/record-wallet-address', (req, res) => {
+router.post('/record-wallet-address', async(req, res) => {
   if(!req.body.walletAddress) {
-    res.status(HTTP_STATUS.CLIENT.BAD_REQUEST).json(
+    return res.status(HTTP_STATUS.CLIENT.BAD_REQUEST).json(
       errorObj('Please send walletAddress in body')
+    );
+  }
+  if(!isHexString(req.body.walletAddress)) {
+    return res.status(HTTP_STATUS.CLIENT.BAD_REQUEST).json(
+      errorObj(`Wallet address should be hex string: ${req.body.walletAddress}`)
     );
   }
   const alreadyPresent = !!req.session.walletAddress;
   req.session.walletAddress = req.body.walletAddress;
+  if(req.session.upholdUserId) {
+    await upholdModel.updateWalletAddress(
+      req.session.upholdUserId,
+      req.session.walletaAddress
+    );
+  }
   res.status(HTTP_STATUS.SUCCESS.OK).json(
-    successObj(alreadyPresent ? 'updated' : 'recorded')
+    successObj(req.session.upholdUserId ? 'stored' : (alreadyPresent ? 'updated' : 'recorded'))
+  );
+});
+
+router.get('/wallet-address', requiresLogin, async(req, res) => {
+  if(!req.session.walletAddress) {
+    const walletAddress = await upholdModel.getWalletAddress(req.session.upholdUserId);
+    if(walletAddress !== '0x'+'0'.repeat(40)) {
+      req.session.walletAddress = walletAddress;
+    } else {
+      return res.status(HTTP_STATUS.SUCCESS.OK).json(
+        successObj(null)
+      );
+    }
+  }
+  res.status(HTTP_STATUS.SUCCESS.OK).json(
+    successObj(req.session.walletAddress)
   );
 });
 
@@ -64,10 +97,11 @@ router.post('/login', async(req, res) => {
   await sdk.setToken({
     access_token: req.session.upholdAccessToken
   });
-  const user = await sdk.getMe();
+  const userObj = await sdk.getMe();
+  req.session.upholdUserId = userObj.id;
   await upholdModel.insertOrUpdateUser(
-    user,
-    req.session.walletAddress
+    userObj,
+    isHexString(req.session.walletAddress) ? req.session.walletAddress : null
   );
   res.status(HTTP_STATUS.SUCCESS.ACCEPTED).json(
     successObj(user)

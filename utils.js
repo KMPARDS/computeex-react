@@ -26,3 +26,22 @@ module.exports.isHexString = str => {
   const regexp = /^[0-9a-fA-F]+$/;
   return regexp.test(str.slice(2));
 }
+
+module.exports.concertToBTCDisplay = btcAmount => {
+  const str = typeof btcAmount === 'string' ? btcAmount : String(btcAmount);
+  if(isNaN(Number(str))) {
+    throw new Error('Invalid btc amount: ' + btcAmount);
+  }
+  if(!str) {
+    throw new Error('Empty btc amount');
+  }
+  const arr = str.split('.');
+  if(arr.length === 1 || arr[1].length < 4) {
+    return str;
+  }
+  if(arr[1].length > 8) {
+    throw new Error('BTC amount has more accuracy than possible: ' + str);
+  }
+  arr[1] += '0'.repeat(8 - arr[1].length);
+  return arr.join('.');
+}

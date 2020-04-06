@@ -10,6 +10,17 @@ window.getQueryParameter = name => {
   }
 }
 
+window.lessDecimals = (str, decimals = 2) => {
+  if(typeof str === 'number') str = String(str);
+  if(typeof str !== 'string') throw new Error('Invalid input');
+  let lessDecimals = str.split('.');
+  if(!lessDecimals[1]) lessDecimals[1] = '0';
+  if(lessDecimals[1].length >= decimals) {
+    lessDecimals[1] = lessDecimals[1].slice(0, decimals);
+  }
+  return lessDecimals.join('.');
+}
+
 ReactDOM.render(
   <React.StrictMode>
     <App />
