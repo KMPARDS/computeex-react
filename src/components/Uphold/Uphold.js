@@ -77,8 +77,6 @@ export default class extends Component {
         fromCurrency = selectedCurrency[0].id;
       }
 
-      console.log({selectedCurrency, fromCurrency});
-
       this.setState({
         fromCurrency,
         currencies
@@ -99,8 +97,8 @@ export default class extends Component {
   }
 
   updateEsAmount = event => {
-    const currencyAmount = (event && event.target && (+event.target.value || 0))
-      || +this.state.inputAmount;
+    const currencyAmount = event && event.target
+      ? (event.target.value || 0) : +this.state.inputAmount;
 
     if(isNaN(currencyAmount)) {
       return this.setState({ errorInputAmount: true });
