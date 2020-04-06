@@ -5,6 +5,8 @@ import Footer from './components/Footer/Footer';
 import Home from './components/Home/Home';
 import Uphold from './components/Uphold/Uphold';
 
+import './App.css';
+
 function App() {
   return (
     <BrowserRouter>

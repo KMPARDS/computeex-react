@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { InputGroup, FormControl, Dropdown, DropdownButton } from 'react-bootstrap';
 import Account from './Account/Account';
+import TransactionModal from './TransactionModal/TransactionModal';
 import axios from '../../axios';
 
 const { apiBaseUrl } = require('../../env');
@@ -36,7 +37,9 @@ export default class extends Component {
     inputAmount: '100',
     errorInputAmount: false,
     esAmount: '',
-    userLoggedIn: false
+    userLoggedIn: false,
+    cards: [],
+    showTransactionModal: false
   };
 
   intervalId = null;
@@ -89,6 +92,11 @@ export default class extends Component {
       this.updateEsAmount();
     })();
 
+    (async() => {
+      const response = await axios.get(apiBaseUrl+'/uphold/cards');
+      this.setState({ cards: response.data.response });
+    })();
+
     this.updateEsAmount();
   };
 
@@ -130,6 +138,25 @@ export default class extends Component {
     }
     return esAmount;
   }
+
+  selectEsFromBalance = async(cardIndex) => {
+    const symbol = this.state.cards[cardIndex].currency;
+    const amount = this.state.cards[cardIndex].available;
+    const filtered = this.state.currencies.filter(currency => {
+      return currency.symbol === symbol
+    });
+
+    if(filtered.length > 1) alert('Found multiple currencies: '+JSON.stringify(filtered));
+
+    if(filtered.length === 0) alert(`Couldn't find the currency ${symbol} exchange rate. Please convert it into supported currencies like USD or BTC.`);
+
+    await this.setState({
+      fromCurrency: filtered[0].id,
+      inputAmount: amount
+    });
+
+    this.updateEsAmount();
+  };
 
   render() {
     return (
@@ -198,14 +225,20 @@ export default class extends Component {
                     window.open("https://sandbox.uphold.com/authorize/3c0d16ce2706bc3c9923b9718c1432f2c7b25a12?scope=accounts:read%20cards:read%20cards:write%20transactions:deposit%20transactions:read%20transactions:transfer:application%20transactions:transfer:others%20transactions:transfer:self%20transactions:withdraw%20transactions:commit:otp%20user:read&state="+response.data.response,"_self");
                     }} src="/img/connect_with_uphold.svg"
                   />
-                </> : <a className="btn-custom-light" style={{marginTop:'10px', display: 'block'}}>Buy ES</a>}
+                </> : <a className="btn-custom light large" style={{marginTop:'10px', display: 'block'}}>Buy ES</a>}
                 </div>
               </div>
             </div>
           </div>
-          {this.state.userLoggedIn ? <Account /> : null}
+          {this.state.userLoggedIn
+            ? <Account
+                selectEsFromBalance={this.selectEsFromBalance}
+                cards={this.state.cards}
+              />
+            : null}
         </div>
       </div>
+      <TransactionModal show={this.state.showTransactionModal} handleClose={() => this.setState({ showTransactionModal: false })}/>
       </>
     );
   }

@@ -123,4 +123,48 @@ router.get('/user', requiresLogin, async(req, res) => {
   );
 });
 
+router.get('/cards', requiresLogin, async(req, res) => {
+  const sdk = generateSdk();
+
+  await sdk.setToken({
+    access_token: req.session.upholdAccessToken
+  });
+
+  let cards = await sdk.getCards(1, 100);
+  if(cards.itemsCount > 100) {
+    cards = await sdk.getCards(1, cards.itemsCount);
+  }
+
+  res.status(HTTP_STATUS.SUCCESS.ACCEPTED).json(
+    successObj(
+      cards.items.map(card => {
+        const { available, balance, currency, id, label } = card;
+        return {
+          available, balance, currency, id, label
+        };
+      })
+    )
+  );
+});
+
+router.post('/transact', requiresLogin, async(req, res) => {
+  const sdk = generateSdk();
+  await sdk.setToken({
+    access_token: req.session.upholdAccessToken
+  });
+  const user = await sdk.getMe();
+
+  const output = await sdk.createCardTransaction(
+    from,
+    {
+      amount: '0.00005',
+      currency: 'BTC',
+      destination: to,
+      message: 'Buy BTC',
+      // securityCode
+    },
+    true
+  );
+});
+
 module.exports = router;

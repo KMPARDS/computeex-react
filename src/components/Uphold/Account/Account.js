@@ -77,7 +77,27 @@ export default class extends Component {
           </>
         }
       </p>
-      <p>Uphold Balances:</p>
+      <p>Uphold Cards:</p>
+      <div className="row">
+        {this.props.cards.map((card, cardIndex) => (
+          <div key={cardIndex} className="col-sm-12 col-md-6 col-lg-4 col-xl-3">
+            <div className="uphold-card">
+              <span className="uphold-label">{card.label}</span>
+              <span className="uphold-currency">Currency: {card.currency}</span>
+              <span className="uphold-available">Available: {card.available}</span>
+              <span className="uphold-balance">Balance: {card.balance}</span>
+              <button
+                style={{ marginTop: '5px' }}
+                className="btn-custom light"
+                onClick={() => {
+                  this.props.selectEsFromBalance(cardIndex);
+                  window.scrollTo(0, 0);
+                }}
+              >Click to use this currency</button>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
