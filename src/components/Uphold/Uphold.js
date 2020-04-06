@@ -33,7 +33,7 @@ export default class extends Component {
     ],
     fromCurrency: 0,
     currencyDropdownFilter: '',
-    inputAmount: '',
+    inputAmount: '100',
     errorInputAmount: false,
     esAmount: '',
     userLoggedIn: false
@@ -54,21 +54,33 @@ export default class extends Component {
       const response = await axios.get(apiBaseUrl + '/uphold/ticker');
       const currencies = response.data
         .filter(ticker => ticker.pair.slice(0,3) === 'BTC')
+        .filter(ticker => {
+          return ticker.currency.slice(0,2) !== 'UP';
+        })
         .map((ticker, i) => ({
           id: i,
           symbol: ticker.currency,
           rateBTC: +ticker.ask
         }));
 
+      currencies.push({
+        id: currencies.length,
+        symbol: 'BTC',
+        rateBTC: 1
+      });
+
       const selectedCurrency = currencies.filter(ticker => {
         return ticker.symbol === this.state.currencies[this.state.fromCurrency].symbol
       });
+
 
       let fromCurrency = 0;
 
       if(selectedCurrency.length) {
         fromCurrency = selectedCurrency[0].id;
       }
+
+      console.log({selectedCurrency, fromCurrency});
 
       this.setState({
         fromCurrency,
@@ -79,7 +91,10 @@ export default class extends Component {
     (async() => {
       const response = await axios.get(apiBaseUrl+'/probit/es-btc-sell-orders');
       this.setState({ probitOrderBook: response.data });
+      this.updateEsAmount();
     })();
+
+    this.updateEsAmount();
   };
 
   componentWillUnmount = () => {
@@ -140,6 +155,7 @@ export default class extends Component {
               <InputGroup>
                 <FormControl
                   placeholder="Enter amount"
+                  value={this.state.inputAmount}
                   className="form-input light large"
                   onChange={this.updateEsAmount}
                 />
@@ -172,7 +188,7 @@ export default class extends Component {
               <p style={{lineHeight:'2rem', margin: '1rem 0'}}>
                 You'll get<br />
               <span className="es-amount-number">{this.state.esAmount || 0}</span><span className="es-amount-symbol">ES</span>
-                (as on live Probit Exchange)
+                {this.state.probitOrderBook.length > 1 ? <>(live from Probit)</> : null}
               </p>
               <div style={{textAlign: 'center', paddingTop: '10px'}}>
               {!this.state.userLoggedIn ? <>
