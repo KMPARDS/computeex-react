@@ -52,7 +52,10 @@ export default class extends Component {
 
     (async() => {
       const response = await axios.get(apiBaseUrl + '/uphold/ticker');
-      const currencies = response.data
+      const currencies = [...response.data, {currency: 'BTC', ask: 1, pair: 'BTCBTC'}]
+        .sort((a, b) => {
+          return a.currency > b.currency;
+        })
         .filter(ticker => ticker.pair.slice(0,3) === 'BTC')
         .filter(ticker => {
           return ticker.currency.slice(0,2) !== 'UP';
@@ -62,12 +65,6 @@ export default class extends Component {
           symbol: ticker.currency,
           rateBTC: +ticker.ask
         }));
-
-      currencies.push({
-        id: currencies.length,
-        symbol: 'BTC',
-        rateBTC: 1
-      });
 
       const selectedCurrency = currencies.filter(ticker => {
         return ticker.symbol === this.state.currencies[this.state.fromCurrency].symbol
@@ -176,17 +173,21 @@ export default class extends Component {
                       placeholder="Type to filter"
                     />
                   </div>
-                  {this.state.currencies.filter(currencyObj => currencyObj.symbol.includes(this.state.currencyDropdownFilter)).slice(0,5).map((currencyObj, i) => (
-                    <Dropdown.Item key={i} onClick={async() => {
-                      await this.setState({ fromCurrency: currencyObj.id });
-                      this.updateEsAmount();
-                    }} href="#" >{currencyObj.symbol}</Dropdown.Item>
-                  ))}
+                  <div style={{overflow: 'scroll', maxHeight: '150px'}}>
+                    {this.state.currencies.filter(currencyObj => currencyObj.symbol
+                      .includes(this.state.currencyDropdownFilter))
+                      .map((currencyObj, i) => (
+                      <Dropdown.Item key={i} onClick={async() => {
+                        await this.setState({ fromCurrency: currencyObj.id });
+                        this.updateEsAmount();
+                      }} href="#" >{currencyObj.symbol}</Dropdown.Item>
+                    ))}
+                  </div>
                 </DropdownButton>
               </InputGroup>
 
               <p style={{lineHeight:'2rem', margin: '1rem 0'}}>
-                You'll get<br />
+                You'll get approximately<br />
               <span className="es-amount-number">{this.state.esAmount || 0}</span><span className="es-amount-symbol">ES</span>
                 {this.state.probitOrderBook.length > 1 ? <>(live from Probit)</> : null}
               </p>
