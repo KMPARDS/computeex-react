@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { InputGroup, FormControl, Dropdown, DropdownButton } from 'react-bootstrap';
 import Account from './Account/Account';
 import TransactionModal from './TransactionModal/TransactionModal';
+
 import axios from '../../axios';
 
 const { apiBaseUrl } = require('../../env');
@@ -39,7 +40,8 @@ export default class extends Component {
     esAmount: '',
     userLoggedIn: false,
     cards: [],
-    showTransactionModal: false
+    creatingTransaction: false,
+    modalTransactionId: null
   };
 
   intervalId = null;
@@ -152,7 +154,8 @@ export default class extends Component {
 
     await this.setState({
       fromCurrency: filtered[0].id,
-      inputAmount: amount
+      inputAmount: amount,
+      cardIndex
     });
 
     this.updateEsAmount();
@@ -225,7 +228,28 @@ export default class extends Component {
                     window.open("https://sandbox.uphold.com/authorize/3c0d16ce2706bc3c9923b9718c1432f2c7b25a12?scope=accounts:read%20cards:read%20cards:write%20transactions:deposit%20transactions:read%20transactions:transfer:application%20transactions:transfer:others%20transactions:transfer:self%20transactions:withdraw%20transactions:commit:otp%20user:read&state="+response.data.response,"_self");
                     }} src="/img/connect_with_uphold.svg"
                   />
-                </> : <a className="btn-custom light large" style={{marginTop:'10px', display: 'block'}}>Buy ES</a>}
+                </> : <a onClick={async() => {
+                  this.setState({ creatingTransaction: true });
+
+                  const card = this.state.cards.filter(card => {
+                    return card.currency === this.state.currencies[this.state.fromCurrency].symbol
+                  })[0];
+
+
+                  const newState = {creatingTransaction: false};
+                  try {
+                    const response = await axios.post(apiBaseUrl+'/uphold/create-transaction', window.qs({
+                      cardId: card.id,
+                      amount: this.state.inputAmount,
+                      currency: card.currency
+                    }),{headers: {'Content-Type': 'application/x-www-form-urlencoded'}});
+                    const transactionId = response.data.response;
+                    newState.modalTransactionId = transactionId;
+                  } catch(error) {
+                    alert('There was error creating transaction: '+error.message);
+                  }
+                  this.setState(newState);
+                }} className="btn-custom light large" style={{marginTop:'10px', display: 'block'}} disabled={this.state.creatingTransaction}>{!this.state.creatingTransaction ? <>Buy ES</>:<>Creating transaction...</>}</a>}
                 </div>
               </div>
             </div>
@@ -237,8 +261,12 @@ export default class extends Component {
               />
             : null}
         </div>
+        {!!this.state.modalTransactionId ? <TransactionModal
+          transactionId={this.state.modalTransactionId}
+          handleClose={() => this.setState({ modalTransactionId: null })}
+        /> : null}
       </div>
-      <TransactionModal show={this.state.showTransactionModal} handleClose={() => this.setState({ showTransactionModal: false })}/>
+
       </>
     );
   }

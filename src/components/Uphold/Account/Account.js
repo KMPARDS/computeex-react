@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import TransactionModal from '../TransactionModal/TransactionModal';
 import axios from '../../../axios';
 
 const { apiBaseUrl } = require('../../../env');
@@ -13,7 +14,9 @@ const EDIT_WALLET_ADDRESS_ENUM = {
 export default class extends Component {
   state = {
     walletAddress: window.walletAddress || null,
-    editWalletAddress: EDIT_WALLET_ADDRESS_ENUM.IDLE
+    editWalletAddress: EDIT_WALLET_ADDRESS_ENUM.IDLE,
+    transactions: [],
+    modalTransactionId: null
   };
 
   intervalId = null;
@@ -34,6 +37,13 @@ export default class extends Component {
         window.walletAddress = walletAddress;
         this.setState({ walletAddress });
       }
+    })();
+
+    (async() => {
+      const response = await axios.get(apiBaseUrl + '/uphold/transactions');
+      const transactions = response.data.response;
+
+      this.setState({ transactions });
     })();
   };
 
@@ -98,6 +108,34 @@ export default class extends Component {
           </div>
         ))}
       </div>
+      {this.state.transactions.length
+        ? <>
+            <p style={{marginTop: '50px'}}>Transactions:</p>
+            {this.state.transactions.map((transaction, i) => (
+              <div key={i} className="transaction-card">
+                <span>ID: {transaction.transactionId}</span>
+                <span><u>{transaction.origin.amount} {transaction.origin.currency}</u> FOR <u>{transaction.esAmount} ES</u></span>
+                <span>{new Date(transaction.createdAt).toLocaleString()}</span>
+                <span><b>Status:</b> {(() => {
+                  switch(transaction.status) {
+                    case 'pending':
+                      return <>Transfer of {transaction.origin.amount} {transaction.origin.currency} is pending.</>
+                    case 'received':
+                      return <>{transaction.origin.amount} {transaction.origin.currency} transfer is successful. ES on your wallet will be sent soon.</>
+                    case 'processed':
+                      return <>Transaction is processed</>
+                  }
+                })()}</span>
+              <button onClick={() => this.setState({ modalTransactionId: transaction.transactionId })}>View</button>
+              </div>
+            ))}
+          </>
+        : null}
+
+      {!!this.state.modalTransactionId ? <TransactionModal
+        transactionId={this.state.modalTransactionId}
+        handleClose={() => this.setState({ modalTransactionId: null })}
+      /> : null}
     </div>
   );
 }

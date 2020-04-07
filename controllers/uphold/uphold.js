@@ -14,12 +14,20 @@ const generateSdk = () => new SDK({
 });
 
 
-const requiresLogin = (req, res, next) => {
+const requiresLogin = async(req, res, next) => {
   if(!req.session.upholdAccessToken) {
     res.status(HTTP_STATUS.CLIENT.UNAUTHORIZED).json(
       errorObj('Please login to ComputeEx using Uphold')
     );
   } else {
+    if(!req.session.upholdUserId) {
+      const sdk = generateSdk();
+      await sdk.setToken({
+        access_token: req.session.upholdAccessToken
+      });
+      const user = await sdk.getMe();
+      req.session.upholdUserId = user.id;
+    }
     next();
   }
 };
@@ -153,6 +161,13 @@ router.post('/create-transaction', requiresLogin, async(req, res) => {
     access_token: req.session.upholdAccessToken
   });
   const user = await sdk.getMe();
+  const walletAddress = await upholdModel.getWalletAddress(req.session.upholdUserId)
+
+  if(!walletAddress) {
+    return res.status(HTTP_STATUS.CLIENT.FORBIDDEN).json(
+      errorObj('Please save a wallet address to proceed with ES purchase transaction')
+    );
+  }
 
   const { cardId, amount, currency } = req.body;
 
@@ -180,13 +195,66 @@ router.post('/create-transaction', requiresLogin, async(req, res) => {
     userId: req.session.upholdUserId,
     upholdTransactionObject,
     esAmount: 0,
-    walletAddress: await upholdModel.getWalletAddress()
+    walletAddress
   };
 
   await upholdModel.insertTransaction(...Object.values(args));
 
   res.status(HTTP_STATUS.SUCCESS.OK).json(
     successObj(upholdTransactionObject.id)
+  );
+});
+
+router.get('/transaction', requiresLogin, async(req, res) => {
+  const transaction = await upholdModel.getTransaction(req.query.transactionId);
+  if(transaction.userId !== req.session.upholdUserId) {
+    return res.status(HTTP_STATUS.CLIENT.FORBIDDEN).json(
+      errorObj('Restricted')
+    );
+  }
+
+  res.status(HTTP_STATUS.SUCCESS.OK).json(
+    successObj(transaction)
+  );
+});
+
+router.get('/transactions', requiresLogin, async(req, res) => {
+  const transactions = await upholdModel.getTransactions(req.session.upholdUserId);
+
+  res.status(HTTP_STATUS.SUCCESS.OK).json(
+    successObj(transactions)
+  );
+});
+
+router.post('/commit-transaction', requiresLogin, async(req, res) => {
+  const sdk = generateSdk();
+  await sdk.setToken({
+    access_token: req.session.upholdAccessToken
+  });
+
+  const transaction = await upholdModel.getTransaction(req.body.transactionId);
+
+  const args = {
+    cardId: transaction.origin.cardId,
+    transactionId: transaction.transactionId,
+    body: {
+      message: 'Buy BTC'
+    }
+  }
+
+  if(req.body.securityCode) {
+    args.body.securityCode = req.body.securityCode;
+  }
+
+  const output = await sdk.commitCardTransaction(
+    ...Object.values(args)
+  );
+
+  // mark tx complete in database
+  await upholdModel.updateTxStatus(req.body.transactionId, 'received');
+
+  res.status(HTTP_STATUS.SUCCESS.OK).json(
+    successObj(output)
   );
 });
 

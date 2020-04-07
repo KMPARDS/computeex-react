@@ -74,9 +74,53 @@ const insertTransaction = async(
 ) => {
   const transactionId = upholdTransactionObject.id;
   const btcAmount = upholdTransactionObject.destination.amount;
-  await queryPromise(`INSERT INTO transfers (transactionId, upholdTransactionObject, userId, btcAmount, esAmount, walletAddress, status) VALUES (${fromRfc4122(transactionId)}, '${JSON.stringify(upholdTransactionObject)}', ${fromRfc4122(userId)}, ${btcAmount}, ${esAmount} ${walletAddress}, 'pending')`);
+  await queryPromise(`INSERT INTO transfers (transactionId, upholdTransactionObject, userId, btcAmount, esAmount, walletAddress, status) VALUES (${fromRfc4122(transactionId)}, '${JSON.stringify(upholdTransactionObject)}', ${fromRfc4122(userId)}, ${btcAmount}, ${esAmount}, ${walletAddress}, 'pending')`);
 };
 
+/// @dev helper method to parse raw table rows
+const parseTransactionRow = row => {
+  const parsed = {...row};
+  delete parsed.upholdTransactionObject;
+  const upholdTxObj = JSON.parse(row.upholdTransactionObject);
+  parsed.transactionId = toRfc4122(parsed.transactionId);
+  parsed.userId = toRfc4122(parsed.userId);
+  parsed.walletAddress = '0x'+parsed.walletAddress.toString('hex');
+  parsed.origin = {
+    amount:  upholdTxObj.origin.amount,
+    currency:  upholdTxObj.origin.currency,
+    cardId: upholdTxObj.origin.CardId
+  };
+  parsed.destination = {
+    amount:  upholdTxObj.destination.amount,
+    currency:  upholdTxObj.destination.currency,
+  };
+
+  return parsed;
+}
+
+const getTransaction = async(transactionId) => {
+  const result = await queryPromise(`SELECT * FROM transfers WHERE transactionId = ${fromRfc4122(transactionId)}`);
+
+  if(!result.length) return null;
+
+  return parseTransactionRow(result[0]);
+};
+
+const getTransactions = async(userId) => {
+  const result = await queryPromise(`SELECT * FROM transfers WHERE userId = ${fromRfc4122(userId)}`);
+
+  return result.map(parseTransactionRow);
+}
+
+const updateTxStatus = async(transactionId, status) => {
+  await queryPromise(`UPDATE transfers SET status = '${status}', updatedAt = NOW() WHERE transactionId = ${fromRfc4122(transactionId)}`);
+}
+
+const updateTxHash = async(transactionId, txHash) => {
+  await queryPromise(`UPDATE transfers SET txHash = ${txHash} WHERE transactionId = ${fromRfc4122(transactionId)}`);
+}
+
 module.exports = {
-  insertOrUpdateUser, getWalletAddress, updateWalletAddress, insertTransaction
+  insertOrUpdateUser, getWalletAddress, updateWalletAddress, insertTransaction, getTransaction,
+  getTransactions, updateTxStatus, updateTxHash
 };

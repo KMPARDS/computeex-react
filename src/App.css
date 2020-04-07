@@ -120,7 +120,7 @@ hr {
   color: #000;
 }
 
-.uphold-card {
+.uphold-card, .transaction-card {
   border: 1px solid #fff;
   border-radius: 4px;
   padding: 1rem;
@@ -147,5 +147,9 @@ hr {
 }
 
 .uphold-card .uphold-balance {
+  display: block;
+}
+
+.transaction-card span {
   display: block;
 }
