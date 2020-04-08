@@ -1,16 +1,14 @@
 {
   "name": "ComputeEx",
   "version": "1.0.0",
-  "description": "",
+  "description": "cc",
   "main": "index.js",
   "scripts": {
-    "dev": "react-scripts start && node server.js",
+    "devfront": "react-scripts start",
+    "devback": "node server.js",
     "build": "react-scripts build",
-    "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "start": "npm run build && node server.js",
-    "predeploy": "REACT_APP_STAGE=production npm run build",
-    "heroku-postbuild": "npm run predeploy"
+    "production": "npm run build && node server.js"
   },
   "author": "",
   "license": "ISC",
