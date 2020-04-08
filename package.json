@@ -4,8 +4,8 @@
   "description": "cc",
   "main": "index.js",
   "scripts": {
-    "devfront": "react-scripts start",
-    "devback": "node server.js",
+    "dev-front": "react-scripts start",
+    "dev-back": "node server.js",
     "build": "react-scripts build",
     "eject": "react-scripts eject",
     "production": "npm run build && node server.js"
