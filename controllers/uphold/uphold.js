@@ -112,7 +112,7 @@ router.post('/login', async(req, res) => {
     isHexString(req.session.walletAddress) ? req.session.walletAddress : null
   );
   res.status(HTTP_STATUS.SUCCESS.ACCEPTED).json(
-    successObj(user)
+    successObj(userObj)
   );
 });
 
