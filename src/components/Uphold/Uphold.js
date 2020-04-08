@@ -5,7 +5,7 @@ import TransactionModal from './TransactionModal/TransactionModal';
 
 import axios from '../../axios';
 
-const { apiBaseUrl } = require('../../env');
+const { apiBaseUrl, upholdClientId } = require('../../env');
 
 export default class extends Component {
   state = {
@@ -225,7 +225,7 @@ export default class extends Component {
                   <p>To proceed, connect your Uphold Account with ComputeEx.</p>
                   <img onClick={async() => {
                     const response = await axios.get(apiBaseUrl+'/uphold/generate-state');
-                    window.open("https://sandbox.uphold.com/authorize/3c0d16ce2706bc3c9923b9718c1432f2c7b25a12?scope=accounts:read%20cards:read%20cards:write%20transactions:deposit%20transactions:read%20transactions:transfer:application%20transactions:transfer:others%20transactions:transfer:self%20transactions:withdraw%20transactions:commit:otp%20user:read&state="+response.data.response,"_self");
+                    window.open(`https://sandbox.uphold.com/authorize/${upholdClientId}?scope=accounts:read%20cards:read%20cards:write%20transactions:deposit%20transactions:read%20transactions:transfer:application%20transactions:transfer:others%20transactions:transfer:self%20transactions:withdraw%20transactions:commit:otp%20user:read&state=${response.data.response}`,"_self");
                     }} src="/img/connect_with_uphold.svg"
                   />
                 </> : <a onClick={async() => {

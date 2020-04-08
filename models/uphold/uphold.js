@@ -1,6 +1,6 @@
 const { toRfc4122, fromRfc4122, isHexString } = require('../../utils');
 const queryPromise = require('../connection')({
-  host: 'localhost',
+  host: process.env.UPHOLD_DATABASE_URL || 'localhost',
   database: process.env.UPHOLD_DATABASE_NAME || 'db',
   user: process.env.UPHOLD_DATABASE_USER || 'root',
   password: process.env.UPHOLD_DATABASE_PASSWORD || 'Qwertyuiop'
