@@ -3,6 +3,9 @@ const upholdApis = require('./uphold/uphold');
 const probitApis = require('./probit/probit');
 const bitcoinEsApis = require('./bitcoinEs/bitcoinEs');
 
+// @dev start processing esWithdrawals
+require('./esWithdrawals/processer');
+
 const router = express.Router();
 
 router.use('/uphold', upholdApis);

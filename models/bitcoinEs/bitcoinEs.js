@@ -158,4 +158,21 @@ const updateEsAmountOfRequest = async(id, esAmount) => {
   `);
 }
 
-module.exports = { insertRequest, isRequestAllowed, getUserTransactions, insertBlock, getBlock, removeBlockAndTransactionsIfExists, allocateDeposits };
+const getEsPendingRequests = async() => {
+  const results = await queryPromise(`
+    SELECT id, esAmountTwoDec, esAddress FROM btcRequests WHERE status = 'espending'
+  `);
+  return results;
+}
+
+const updateEsWithdrawalTxHash = async(id, txHash) => {
+  await queryPromise(`
+    UPDATE btcRequests
+      SET
+        esWithdrawalTxHash = ${txHash},
+        status = 'essent'
+      WHERE id = ${id}
+  `);
+};
+
+module.exports = { insertRequest, isRequestAllowed, getUserTransactions, insertBlock, getBlock, removeBlockAndTransactionsIfExists, allocateDeposits, getBtcDepositedRequests, updateEsAmountOfRequest, getEsPendingRequests, updateEsWithdrawalTxHash };
