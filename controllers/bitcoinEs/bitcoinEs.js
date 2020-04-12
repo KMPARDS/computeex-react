@@ -6,6 +6,8 @@
 // ES amount will be calculated and added to sending script
 // ES will be sent
 
+/// IMP: check the case when server is down for a while and restarts, it should sync to all the bitcoin blocks with rate limit handeling and then only trigger the provider.on
+
 const { randomBytes } = require('crypto');
 const express = require('express');
 const router = express.Router();

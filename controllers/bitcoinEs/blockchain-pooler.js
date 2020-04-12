@@ -1,6 +1,7 @@
 const bitcoinModel = require('../../models/bitcoinEs/bitcoinEs');
 const bitcoin = require('/Users/sohamzemse/soham/workspace/blockchain/bitcoin-js');
 const { isHexString } = require('../../utils');
+const { fetchEsBtcSellOrders, getEsAmountFromBTC } = require('../probit/utils');
 
 const provider = new bitcoin.providers.BlockcypherProvider(
   process.env.NODE_ENV === 'production' ? 'btc' : 'test3',
@@ -65,6 +66,20 @@ const updateBlockTransactions = async newBlockNumber => {
   await bitcoinModel.insertBlock(newBlockNumber, block.hash, transactionsArray);
 };
 
+const updateEsAmount = async() => {
+  console.log('updating es amount');
+  const depositedRequests = await bitcoinModel.getBtcDepositedRequests();
+  if(depositedRequests.length) {
+    const orderBook = await fetchEsBtcSellOrders();
+    await Promise.all(depositedRequests.map(async request => {
+      const btcAmount = request.satoshiAmount / 10**8;
+      const esAmount = getEsAmountFromBTC(btcAmount, orderBook);
+      await bitcoinModel.updateEsAmountOfRequest(request.id, esAmount);
+    }));
+  }
+  return depositedRequests.length;
+};
+
 provider.on('block', async newBlockNumber => {
   console.log('\n\nNew bitcoin block', newBlockNumber);
   if(typeof newBlockNumber !== 'number') {
@@ -100,7 +115,14 @@ provider.on('block', async newBlockNumber => {
       await updateBlockTransactions(i);
     }
   }
-  console.log('Allocating deposits with waiting requests:');
+  console.log('Allocating deposits with waiting requests...');
   const result = await bitcoinModel.allocateDeposits(confirmedBlockHeight);
-  console.log(`Done: ${result.affectedRows} allocated\n\n`);
+  console.log(`Done: ${result.affectedRows} allocated\n`);
+
+  console.log('Calculating ES for BTC...');
+  const countOfRequestsUpdated = await updateEsAmount();
+  console.log(countOfRequestsUpdated
+    ? `Updated ES Amount for ${countOfRequestsUpdated} requests.`
+    : 'No request updated'
+  );
 });

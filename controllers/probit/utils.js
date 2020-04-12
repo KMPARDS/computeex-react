@@ -31,4 +31,4 @@ const getEsAmountFromBTC = (btcAmount, probitOrderBook) => {
 }
 
 
-module.exports = { fetchEsBtcSellOrders };
+module.exports = { fetchEsBtcSellOrders, getEsAmountFromBTC };
