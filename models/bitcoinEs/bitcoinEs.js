@@ -5,6 +5,7 @@ const queryPromise = require('../connection')({
   password: process.env.BITCOINES_DATABASE_PASSWORD || 'password'
 });
 
+/// @dev used to insert a request by user
 const insertRequest = async(satoshiAmount, walletAddress) => {
   const results = await queryPromise(`
     INSERT INTO btcRequests (satoshiAmount, esAddress)
@@ -19,31 +20,51 @@ const insertRequest = async(satoshiAmount, walletAddress) => {
   return results;
 };
 
+/// @dev to check whether already a waiting request exists
 const isRequestAllowed = async(satoshiAmount) => {
   const results = await queryPromise(`SELECT satoshiAmount FROM btcRequests WHERE satoshiAmount=${satoshiAmount} AND status = 'waiting';`);
   console.log({results});
   return results.length === 0;
 };
 
+/// @dev helper: insert a row in btcDeposits
+const insertDeposit = async(transactionHash, blockHeight, value) => {
+  await queryPromise(`INSERT INTO btcDeposits (transactionHash, blockHeight, value) VALUES (${transactionHash}, ${blockHeight}, '${value}')`);
+};
+
+/// @dev insert a row in btcBlock as well as rows in btcDeposits
 const insertBlock = async(blockHeight, blockHash, transactionsArray) => {
   await queryPromise(`INSERT INTO btcBlocks (blockHeight, blockHash, transactions) VALUES (${blockHeight}, ${blockHash}, '${JSON.stringify(transactionsArray)}')`);
+
+  await Promise.all(transactionsArray.map(transaction => {
+    return insertDeposit(transaction.tx_hash, blockHeight, transaction.value)
+  }));
 }
 
+/// @dev select a btc block from database
 const getBlock = async(blockHeight) => {
   const results = await queryPromise(`SELECT * FROM btcBlocks WHERE blockHeight = ${blockHeight}`);
   if(results.length === 0) {
     return null;
   } else {
-    return results[0];
+    const block = results[0];
+    block.blockHash = '0x'+block.blockHash.toString('hex');
+    return block;
   }
-}
-
-const insertDeposit = async(transactionHash, blockHeight, value) => {
-  await queryPromise(`INSERT INTO btcDeposits (transactionHash, blockHeight, value) VALUES (${transactionHash}, ${blockHeight}, '${value}')`);
 };
 
+/// @dev remove blocks and transactions of a certain block height
+const removeBlockAndTransactionsIfExists = async(blockHeight) => {
+  // adding a check for safety since this can delete
+  if(typeof blockHeight !== 'number') throw new Error('Invalid Block Height');
+  await queryPromise(`DELETE FROM btcBlocks WHERE blockHeight = ${blockHeight};`);
+  await queryPromise(`DELETE FROM btcDeposits WHERE blockHeight = ${blockHeight} AND btcRequestId IS NULL;`);
+}
+
+/// @dev this function should return empty, but will give some rows if there is no bitcoin request for that amount
 const getUnallocatedDeposits = async(confirmedBlockHeight) => {
-  await queryPromise(`SELECT * FROM btcDeposits WHERE blockHeight <= ${confirmedBlockHeight} AND btcRequestId = NULL`);
+  const results = await queryPromise(`SELECT * FROM btcDeposits WHERE blockHeight <= ${confirmedBlockHeight} AND btcRequestId IS NULL`);
+  return results;
 };
 
 // this function allocates all the fresh deposits (unallocated) to fresh requests (pending)
@@ -109,4 +130,4 @@ const getUserTransactions = async(esAddress) => {
   return requests;
 }
 
-module.exports = { insertRequest, isRequestAllowed, getUserTransactions };
+module.exports = { insertRequest, isRequestAllowed, getUserTransactions, insertBlock, getBlock, removeBlockAndTransactionsIfExists, allocateDeposits };

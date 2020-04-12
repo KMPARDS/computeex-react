@@ -7,8 +7,9 @@ CREATE TABLE btcRequests (
   satoshiAmount INT NOT NULL,
   esAddress BINARY(20) NOT NULL,
   btcDepositTxHash BINARY(32) UNIQUE,
+  esAmountTwoDec INT, -- es amount * 100
   esWithdrawalTxHash BINARY(32) UNIQUE,
-  status enum('waiting', 'suspended', 'btcdeposited', 'essent') DEFAULT 'waiting',
+  status enum('waiting', 'suspended', 'btcdeposited', 'espending', 'essent') DEFAULT 'waiting',
   createdAt TIMESTAMP DEFAULT NOW(),
   INDEX(satoshiAmount, esAddress, status, btcDepositTxHash)
 );

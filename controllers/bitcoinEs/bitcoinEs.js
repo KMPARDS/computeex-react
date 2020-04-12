@@ -89,8 +89,7 @@ router.get('/get-requests', async(req, res) => {
   );
 });
 
-function checkBtcDeposits() {
-
-}
+// checking btc deposits on live bitcoin blockchain and updating it into the database
+require('./blockchain-pooler');
 
 module.exports = router;
