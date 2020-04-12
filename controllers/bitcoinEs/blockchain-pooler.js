@@ -60,7 +60,7 @@ const updateBlockTransactions = async newBlockNumber => {
     return { tx_hash, value };
   }).filter(t => t !== null);
 
-  console.log({newBlockNumber, 'block.hash': block.hash, transactionsArray});
+  // console.log({blockNumber: newBlockNumber, 'block.hash': block.hash, transactionsArray});
   // adds the block to btcBlock table as well as transactions if any to btcDeposits
   await bitcoinModel.insertBlock(newBlockNumber, block.hash, transactionsArray);
 };
@@ -94,7 +94,7 @@ provider.on('block', async newBlockNumber => {
   }
   if(actualConfirmedBlock.hash.toLowerCase() !== confirmedDbBlock.blockHash.toLowerCase()) {
     // there were reorgs, updating database from confirmedBlockHeight to current - 1
-    console.log('Reorg found, updating database');
+    console.log(`Reorg found at ${confirmedBlockHeight}: ${confirmedDbBlock.blockHash.toLowerCase()} to ${actualConfirmedBlock.hash.toLowerCase()}\nupdating database...`);
     for(let i = confirmedBlockHeight; i < newBlockNumber; i++) {
       console.log('updating db block',i);
       await updateBlockTransactions(i);
