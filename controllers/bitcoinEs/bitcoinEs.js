@@ -84,6 +84,12 @@ router.post('/register-deposit', async(req, res) => {
   }
 });
 
+router.get('/btc-deposit-address', async(req, res) => {
+  res.status(HTTP_STATUS.SUCCESS.OK).json(
+    successObj(process.env.BITCOINES_DEPOSIT_WALLET)
+  )
+});
+
 router.get('/get-requests', async(req, res) => {
   const result = await bitcoinModel.getUserTransactions(req.query.walletAddress);
   res.status(HTTP_STATUS.SUCCESS.OK).json(
