@@ -15,14 +15,14 @@ const updateBlockTransactions = async newBlockNumber => {
 
   // add the new block number and blockhash to database
   const block = await provider.getBlock(newBlockNumber);
-  console.log({block});
+  // console.log({block});
 
   // gets transactions specifically to our deposit wallet address in this block
   let transactionsArray = await provider.getTransactions(process.env.BITCOINES_DEPOSIT_WALLET, {
     fromBlock: newBlockNumber,
     toBlock: newBlockNumber
   });
-  console.log({transactionsArray});
+  // console.log({transactionsArray});
 
   // sanitize block hash, transaction hash, block height and transaction value before passing.
   if(block.hash.slice(0,2) !== '0x') {
@@ -66,7 +66,7 @@ const updateBlockTransactions = async newBlockNumber => {
 };
 
 provider.on('block', async newBlockNumber => {
-  console.log('New bitcoin block', newBlockNumber);
+  console.log('\n\nNew bitcoin block', newBlockNumber);
   if(typeof newBlockNumber !== 'number') {
     console.log('Invalid New BlockNumber (typeof newBlockNumber !== \'number\')', newBlockNumber);
     return;
@@ -92,10 +92,7 @@ provider.on('block', async newBlockNumber => {
   if(actualConfirmedBlock.hash.slice(0,2) !== '0x') {
     actualConfirmedBlock.hash = '0x'+actualConfirmedBlock.hash;
   }
-  if(actualConfirmedBlock.hash.toLowerCase() === confirmedDbBlock.blockHash.toLowerCase()) {
-    console.log('allocating deposits');
-    await bitcoinModel.allocateDeposits(confirmedBlockHeight);
-  } else {
+  if(actualConfirmedBlock.hash.toLowerCase() !== confirmedDbBlock.blockHash.toLowerCase()) {
     // there were reorgs, updating database from confirmedBlockHeight to current - 1
     console.log('Reorg found, updating database');
     for(let i = confirmedBlockHeight; i < newBlockNumber; i++) {
@@ -103,4 +100,7 @@ provider.on('block', async newBlockNumber => {
       await updateBlockTransactions(i);
     }
   }
+  console.log('Allocating deposits with waiting requests:');
+  const result = await bitcoinModel.allocateDeposits(confirmedBlockHeight);
+  console.log(`Done: ${result.affectedRows} allocated\n\n`);
 });

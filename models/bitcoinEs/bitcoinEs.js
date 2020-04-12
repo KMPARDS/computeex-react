@@ -70,7 +70,7 @@ const getUnallocatedDeposits = async(confirmedBlockHeight) => {
 // this function allocates all the fresh deposits (unallocated) to fresh requests (pending)
 // this function to be called on new bitcoin block
 const allocateDeposits = async(confirmedBlockHeight) => {
-  await queryPromise(`
+  return await queryPromise(`
     UPDATE btcRequests
       INNER JOIN btcDeposits
       ON btcRequests.status = 'waiting'
@@ -114,20 +114,48 @@ const getUserTransactions = async(esAddress) => {
 
   waitings = waitings.map(waiting => ({
     id: waiting.id,
-    btcTxHash: waiting.transactionHash.toString('hex'),
+    btcTxHash: '0x' + waiting.transactionHash.toString('hex'),
     blockHeight: waiting.blockHeight
   }));
 
   requests = requests.map(request => {
     const waiting = waitings.filter(waiting => waiting.id === request.id);
     return {
-      ...request,
+      btcAmount: request.satoshiAmount/10**8,
       esAddress: '0x' + request.esAddress.toString('hex'),
-      waiting: waiting[0]
+      btcDepositTxHash: request.btcDepositTxHash
+        ? '0x' + request.btcDepositTxHash.toString('hex') : null,
+      esAmount: request.esAmountTwoDec ? request.esAmountTwoDec / 100 : null,
+      esWithdrawalTxHash: request.esWithdrawalTxHash
+        ? '0x' + request.esWithdrawalTxHash.toString('hex') : null,
+      status: request.status,
+      waiting: waiting[0],
+      createdAt: request.createdAt
     }
   });
 
   return requests;
+}
+
+/// @dev these are the requests that have their BTC deposited + confirmations
+///   further esAmount will be calculated for this
+const getBtcDepositedRequests = async() => {
+  const results = await queryPromise(`
+    SELECT id, satoshiAmount FROM btcRequests WHERE status = 'btcdeposited'
+  `);
+  return results;
+}
+
+/// @dev this will update ES amount to the id
+const updateEsAmountOfRequest = async(id, esAmount) => {
+  const esAmountTwoDec = Math.round(esAmount * 100);
+  await queryPromise(`
+    UPDATE btcRequests
+      SET
+        esAmountTwoDec = ${esAmountTwoDec},
+        status = 'espending'
+      WHERE id=${id}
+  `);
 }
 
 module.exports = { insertRequest, isRequestAllowed, getUserTransactions, insertBlock, getBlock, removeBlockAndTransactionsIfExists, allocateDeposits };
