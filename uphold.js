@@ -43,6 +43,27 @@ const sdk = new SDK({
     console.log({currencies: user.balances.currencies});
   }
 
+  if(process.argv[2] === 'ver') {
+    const user = await sdk.getMe();
+    console.log({verifications: user.verifications});
+  }
+
+  if(process.argv[2] === 'cards') {
+    let cards = await sdk.getCards(1, 100);
+    if(cards.itemsCount > 100) {
+      cards = await sdk.getCards(1, cards.itemsCount);
+    }
+    console.log({cards: cards.items});
+  }
+
+  if(process.argv[2] === 'txs') {
+    let txs = await sdk.getTransactions(1, 100);
+    if(txs.itemsCount > 100) {
+      txs = await sdk.getTransactions(1, txs.itemsCount);
+    }
+    console.log({txs: txs.items});
+  }
+
   if(process.argv[2] === 'user') {
     const user = await sdk.getMe();
     console.log({user});
@@ -62,7 +83,8 @@ const sdk = new SDK({
     // const output = await sdk.getCards();
     const [from, to] = [
       // INR_CARD_ID,
-      BTC_CARD_ID_AVEESH,
+      // BTC_CARD_ID_AVEESH,
+      INR_CARD_ID_AVEESH,
       BTC_CARD_ID,
       // 'soham@blocklogy.org'
       // 'mzEqBbGFkTpt8saszg6PVeguAxpDaZyfp9'
@@ -70,8 +92,8 @@ const sdk = new SDK({
     const output = await sdk.createCardTransaction(
       from,
       {
-        amount: '0.00005',
-        currency: 'BTC',
+        amount: '1',
+        currency: 'INR',
         destination: to,
         message: 'Buy BTC',
         // securityCode
