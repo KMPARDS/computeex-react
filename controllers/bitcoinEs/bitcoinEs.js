@@ -51,15 +51,15 @@ router.get('/btc-amount-available', async(req, res) => {
   );
 });
 
-router.get('/register-deposit', async(req, res) => {
-  if(!isWalletAddress(req.query.walletAddress)) {
+router.post('/register-deposit', async(req, res) => {
+  if(!isWalletAddress(req.body.walletAddress)) {
     return res.status(HTTP_STATUS.CLIENT.BAD_REQUEST).json(
       errorObj('btcAmount is not available')
     );
   }
 
   const boolean = await bitcoinModel.isRequestAllowed(
-    getSatoshisFromBtcAmount(req.query.btcAmount)
+    getSatoshisFromBtcAmount(req.body.btcAmount)
   );
 
   const btcNotAvailableError = () => res.status(HTTP_STATUS.CLIENT.NOT_ACCEPTABLE).json(
@@ -71,8 +71,8 @@ router.get('/register-deposit', async(req, res) => {
   }
 
   const result = await bitcoinModel.insertRequest(
-    getSatoshisFromBtcAmount(req.query.btcAmount),
-    req.query.walletAddress
+    getSatoshisFromBtcAmount(req.body.btcAmount),
+    req.body.walletAddress
   );
 
   if(result.affectedRows === 1) {
