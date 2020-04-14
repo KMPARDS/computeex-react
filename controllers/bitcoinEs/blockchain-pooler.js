@@ -1,5 +1,5 @@
 const bitcoinModel = require('../../models/bitcoinEs/bitcoinEs');
-const bitcoin = require('/Users/sohamzemse/soham/workspace/blockchain/bitcoin-js');
+const bitcoin = require('bitcoin3js');
 const { isHexString } = require('../../utils');
 const { fetchEsBtcSellOrders, getEsAmountFromBTC } = require('../probit/utils');
 
