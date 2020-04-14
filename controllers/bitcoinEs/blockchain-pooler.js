@@ -5,10 +5,28 @@ const { fetchEsBtcSellOrders, getEsAmountFromBTC } = require('../probit/utils');
 
 const provider = new bitcoin.providers.BlockcypherProvider(
   process.env.NODE_ENV === 'production' ? 'btc' : 'test3',
-  'c29426c605e541bea307de3a54d94fcf'
+  'a3c1aad4c151458da9b1fdee2a7fbdf3'
 );
 
-const updateBlockTransactions = async newBlockNumber => {
+/// @dev saving blocks that were not saved
+provider.getBlockHeight().then(async blockNumber => {
+  const lastBlockNumberDb = await bitcoinModel.getLastBlockNumber();
+  console.log(`Live block number is ${blockNumber} while db block number is ${lastBlockNumberDb}`);
+  if(lastBlockNumberDb < blockNumber) {
+    for(let current = lastBlockNumberDb + 1; current <= blockNumber; current++) {
+      console.log(`Updating old block: ${current} (from ${lastBlockNumberDb+1} to ${blockNumber})`);
+      await updateBlockTransactions(current);
+      const waitTime = process.env.BLOCKES_FETCHING_OLD_BLOCK_DELAY || 5000;
+      console.log(`Waiting for ${waitTime/1000} seconds`);
+      await new Promise(function(resolve, reject) {
+        setTimeout(resolve, waitTime);
+      });
+    }
+    console.log(`Finished syncing old blocks: Synced ${blockNumber - lastBlockNumberDb} blocks`);
+  }
+});
+
+async function updateBlockTransactions(newBlockNumber) {
   // check if the block already exists in the database
   // if no its ok, but if yes then remove data of older ones
   // create models: check block inserted in btcBlocks and deposits, delete rows for the blocknumber
@@ -64,7 +82,7 @@ const updateBlockTransactions = async newBlockNumber => {
   // console.log({blockNumber: newBlockNumber, 'block.hash': block.hash, transactionsArray});
   // adds the block to btcBlock table as well as transactions if any to btcDeposits
   await bitcoinModel.insertBlock(newBlockNumber, block.hash, transactionsArray);
-};
+}
 
 const updateEsAmount = async() => {
   console.log('updating es amount');

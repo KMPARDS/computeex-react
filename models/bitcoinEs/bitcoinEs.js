@@ -53,6 +53,11 @@ const getBlock = async(blockHeight) => {
   }
 };
 
+const getLastBlockNumber = async() => {
+  const results = await queryPromise(`SELECT MAX(blockHeight) AS lastBlockNumber FROM btcBlocks`);
+  return results[0].lastBlockNumber;
+};
+
 /// @dev remove blocks and transactions of a certain block height
 const removeBlockAndTransactionsIfExists = async(blockHeight) => {
   // adding a check for safety since this can delete
@@ -175,4 +180,4 @@ const updateEsWithdrawalTxHash = async(id, txHash) => {
   `);
 };
 
-module.exports = { insertRequest, isRequestAllowed, getUserTransactions, insertBlock, getBlock, removeBlockAndTransactionsIfExists, allocateDeposits, getBtcDepositedRequests, updateEsAmountOfRequest, getEsPendingRequests, updateEsWithdrawalTxHash };
+module.exports = { insertRequest, isRequestAllowed, getUserTransactions, insertBlock, getBlock, getLastBlockNumber, removeBlockAndTransactionsIfExists, allocateDeposits, getBtcDepositedRequests, updateEsAmountOfRequest, getEsPendingRequests, updateEsWithdrawalTxHash };
