@@ -1115,9 +1115,8 @@ welcome area v2 css
 ======================*/
 
 .welcome-area.v2 {
-  padding: 90px 0;
-      padding-top: 90px;
-  padding-top: 160px;
+  padding: 40px 0 60px 0;
+  padding-top: 90px;
 }
 
 .v2.welcome-progress {
@@ -1698,6 +1697,8 @@ a.gradient-btn:hover:after{
 .heading h5 {
   font-size: 16px;
   text-transform: uppercase;
+  color: #f5da55;
+  font-weight: 600;
 }
 
 .about-mid-img img,
@@ -1714,3 +1715,11 @@ a.gradient-btn:hover:after{
 ::placeholder{color:#fff}
 
 /*===================================== end =================================*/
+
+
+.com-btn{
+ padding: 5px 23px;
+cursor: pointer;
+  background: transparent;
+  border: 2px solid #1452e2;
+}
