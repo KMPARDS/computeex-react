@@ -1,30 +1,115 @@
 const bitcoinModel = require('../../models/bitcoinEs/bitcoinEs');
 const bitcoin = require('bitcoin3js');
-const { isHexString } = require('../../utils');
+const { isHexString, isBytes32Hex } = require('../../utils');
 const { fetchEsBtcSellOrders, getEsAmountFromBTC } = require('../probit/utils');
 
-const provider = new bitcoin.providers.BlockcypherProvider(
-  process.env.NODE_ENV === 'production' ? 'btc' : 'test3',
-  'a3c1aad4c151458da9b1fdee2a7fbdf3'
-);
+// const provider = bitcoin.getDefaultProvider(
+//   process.env.NODE_ENV === 'production' ? 'btc' : 'test3',
+//   {blockcypher: 'c29426c605e541bea307de3a54d94fcf'}
+// );
+
+const provider = new bitcoin.providers.FallbackProvider([
+  new bitcoin.providers.BitapsProvider('test3'),
+  new bitcoin.providers.BlockcypherProvider('test3', 'a3c1aad4c151458da9b1fdee2a7fbdf3'),
+], false);
 
 /// @dev saving blocks that were not saved
-provider.getBlockHeight().then(async blockNumber => {
-  const lastBlockNumberDb = await bitcoinModel.getLastBlockNumber();
-  console.log(`Live block number is ${blockNumber} while db block number is ${lastBlockNumberDb}`);
-  if(lastBlockNumberDb < blockNumber) {
-    for(let current = lastBlockNumberDb + 1; current <= blockNumber; current++) {
-      console.log(`Updating old block: ${current} (from ${lastBlockNumberDb+1} to ${blockNumber})`);
-      await updateBlockTransactions(current);
-      const waitTime = process.env.BLOCKES_FETCHING_OLD_BLOCK_DELAY || 5000;
-      console.log(`Waiting for ${waitTime/1000} seconds`);
-      await new Promise(function(resolve, reject) {
-        setTimeout(resolve, waitTime);
-      });
+(async() => {
+  const dbBlockNumbers = (await bitcoinModel.getDbBlockNumbers()).map(obj => obj.blockHeight);
+  const missingBlockNumbers = [];
+
+  let checkBlockNumber = Number(process.env.BITCOINES_START_BLOCK_NUMBER || (process.env.NODE_ENV === 'production' ? 625922 : 1700379));
+
+  console.log({checkBlockNumber});
+
+  for(const b of dbBlockNumbers) {
+    if(b <= checkBlockNumber) {
+      continue;
     }
-    console.log(`Finished syncing old blocks: Synced ${blockNumber - lastBlockNumberDb} blocks`);
+    checkBlockNumber++;
+    while(checkBlockNumber < b) {
+      console.log({b, checkBlockNumber});
+      missingBlockNumbers.push(checkBlockNumber);
+      checkBlockNumber++;
+    }
   }
-});
+
+  const currentBlockNumber = await provider.getBlockHeight();
+
+  console.log({checkBlockNumber, currentBlockNumber});
+
+  for(; checkBlockNumber < currentBlockNumber; checkBlockNumber++) {
+    missingBlockNumbers.push(checkBlockNumber);
+  }
+
+  console.log({missingBlockNumbers});
+
+  if(!missingBlockNumbers.length) {
+    console.log('Nothing missing, closing recovery.');
+    return;
+  }
+
+  let blocks = [];
+
+  if(missingBlockNumbers.length < 199) {
+    blocks = await provider.getBlocks(missingBlockNumbers);
+  } else {
+    const size = 200;
+    let counter = 0;
+    while(true) {
+      console.log('counter', counter);
+      const partNumbers = missingBlockNumbers.slice(0 + counter * size, 200 + counter * size);
+      if(partNumbers.length === 0) break;
+
+      partBlocks = await provider.getBlocks(partNumbers);
+
+      blocks = [...blocks, ...partBlocks];
+      counter++;
+    }
+  }
+
+  console.log('blocks downloaded', blocks.length);
+
+  const transactions = await provider.getTransactions(process.env.BITCOINES_DEPOSIT_WALLET, {
+    fromBlock: missingBlockNumbers[0], // Math.min(...missingBlockNumbers),
+    toBlock: missingBlockNumbers[missingBlockNumbers.length - 1] // Math.max(...missingBlockNumbers)
+  });
+
+  console.log('transactions downloaded', transactions.length);
+
+  const blocksResult = await Promise.all(blocks.map(async block => {
+    try {
+      const blockhash = block.hash;
+      if(typeof block.height !== 'number') throw new Error('Invalid block height from provider');
+      if(!bitcoin.utils.isBytes32Hex(blockhash)) throw new Error('Invalid hash from provider');
+      // if(!(transactions instanceof Array)) throw new Error('Invalid transactions');
+      // console.log('inserting block', {'block.height':block.height,blockhash, transactions});
+      await bitcoinModel.insertBlock(block.height, blockhash, []);
+      return true;
+    } catch (error) {
+      console.log(`Error while inserting block ${block.height}`, error.message);
+      return false;
+    }
+  }));
+
+  // console.log('blocksResult', blocksResult);
+
+  const transactionsResult = await Promise.all(transactions.map(async transaction => {
+    try {
+      if(typeof transaction.height !== 'number') throw new Error('Invalid block height from provider');
+      if(!bitcoin.utils.isBytes32Hex(transaction.hash)) throw new Error('Invalid hash from provider');
+      if(!(transactions instanceof Array)) throw new Error('Invalid transactions');
+
+      await bitcoinModel.insertDeposit(transaction.hash, transaction.height, transaction.received)
+      return true;
+    } catch (error) {
+      console.log(`Error while inserting transaction ${transaction.hash}`, error.message);
+      return false;
+    }
+  }));
+
+  console.log(`Updated ${blocksResult.filter(b => b).length} ${transactionsResult.filter(t => t).length}`);
+})();
 
 async function updateBlockTransactions(newBlockNumber) {
   // check if the block already exists in the database
@@ -41,7 +126,8 @@ async function updateBlockTransactions(newBlockNumber) {
     fromBlock: newBlockNumber,
     toBlock: newBlockNumber
   });
-  // console.log({transactionsArray});
+
+  console.log({newBlockNumber, transactionsArray});
 
   // sanitize block hash, transaction hash, block height and transaction value before passing.
   if(block.hash.slice(0,2) !== '0x') {
@@ -57,31 +143,37 @@ async function updateBlockTransactions(newBlockNumber) {
   // IMP it has to be checked that every transaction is a receiving transaction and not sending transaction.
 
   transactionsArray = transactionsArray.map(transaction => {
-    let tx_hash = transaction.tx_hash;
-    let value = transaction.value;
+    let hash = transaction.hash;
+    let received = transaction.received;
 
-    if(typeof tx_hash !== 'string') {
-      console.log('Not a hex string (typeof tx_hash !== \'string\'):',tx_hash);
+    if(received === 0) return null;
+
+    if(typeof hash !== 'string') {
+      console.log('Not a hex string (typeof tx_hash !== \'string\'):',hash);
       return null;
     }
-    if(tx_hash.slice(0,2) !== '0x') {
-      tx_hash = '0x'+tx_hash;
+    if(hash.slice(0,2) !== '0x') {
+      hash = '0x'+hash;
     }
-    if(!isHexString(tx_hash)) {
-      console.log('Not a hex string (tx_hash.slice(0,2) !== \'0x\'):',tx_hash);
+    if(!isHexString(hash)) {
+      console.log('Not a hex string (tx_hash.slice(0,2) !== \'0x\'):',hash);
       return null;
     }
-    if(typeof value !== 'number') {
-      console.log('value should be number (typeof value !== \'number\'):', value);
+    if(typeof received !== 'number') {
+      console.log('value should be number (typeof value !== \'number\'):', received);
       return null;
     }
 
-    return { tx_hash, value };
+    return { hash, received };
   }).filter(t => t !== null);
 
   // console.log({blockNumber: newBlockNumber, 'block.hash': block.hash, transactionsArray});
   // adds the block to btcBlock table as well as transactions if any to btcDeposits
-  await bitcoinModel.insertBlock(newBlockNumber, block.hash, transactionsArray);
+  try {
+    await bitcoinModel.insertBlock(newBlockNumber, block.hash, transactionsArray);
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 const updateEsAmount = async() => {
@@ -106,7 +198,11 @@ provider.on('block', async newBlockNumber => {
   }
 
   // check if block already exist, add transaction replace transactions
-  await updateBlockTransactions(newBlockNumber);
+  try {
+    await updateBlockTransactions(newBlockNumber);
+  } catch (error) {
+    console.log(error);
+  }
 
   // now time to mark transactions who have got enough confirmations as resolved
   // check if last 6th block has the same blockhash with real and in database
@@ -130,7 +226,11 @@ provider.on('block', async newBlockNumber => {
     console.log(`Reorg found at ${confirmedBlockHeight}: ${confirmedDbBlock.blockHash.toLowerCase()} to ${actualConfirmedBlock.hash.toLowerCase()}\nupdating database...`);
     for(let i = confirmedBlockHeight; i < newBlockNumber; i++) {
       console.log('updating db block',i);
-      await updateBlockTransactions(i);
+      try {
+        await updateBlockTransactions(i);
+      } catch(error) {
+        console.log(error);
+      }
     }
   }
   console.log('Allocating deposits with waiting requests...');

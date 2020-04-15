@@ -7,6 +7,7 @@ const queryPromise = require('../connection')({
 
 /// @dev used to insert a request by user
 const insertRequest = async(satoshiAmount, walletAddress) => {
+  // @audit check without LIMIT 1
   const results = await queryPromise(`
     INSERT INTO btcRequests (satoshiAmount, esAddress)
       SELECT * FROM (SELECT
@@ -37,7 +38,8 @@ const insertBlock = async(blockHeight, blockHash, transactionsArray) => {
   await queryPromise(`INSERT INTO btcBlocks (blockHeight, blockHash, transactions) VALUES (${blockHeight}, ${blockHash}, '${JSON.stringify(transactionsArray)}')`);
 
   await Promise.all(transactionsArray.map(transaction => {
-    return insertDeposit(transaction.tx_hash, blockHeight, transaction.value)
+    console.log('in insertblock before dep', transaction, transaction.hash, blockHeight, transaction.received);
+    return insertDeposit(transaction.hash, blockHeight, transaction.received)
   }));
 }
 
@@ -56,6 +58,10 @@ const getBlock = async(blockHeight) => {
 const getLastBlockNumber = async() => {
   const results = await queryPromise(`SELECT MAX(blockHeight) AS lastBlockNumber FROM btcBlocks`);
   return results[0].lastBlockNumber;
+};
+const getDbBlockNumbers = async() => {
+  const results = await queryPromise(`SELECT blockHeight FROM btcBlocks ORDER BY blockHeight`);
+  return results;
 };
 
 /// @dev remove blocks and transactions of a certain block height
@@ -180,4 +186,4 @@ const updateEsWithdrawalTxHash = async(id, txHash) => {
   `);
 };
 
-module.exports = { insertRequest, isRequestAllowed, getUserTransactions, insertBlock, getBlock, getLastBlockNumber, removeBlockAndTransactionsIfExists, allocateDeposits, getBtcDepositedRequests, updateEsAmountOfRequest, getEsPendingRequests, updateEsWithdrawalTxHash };
+module.exports = { insertRequest, isRequestAllowed, getUserTransactions, insertBlock, insertDeposit, getBlock, getLastBlockNumber, getDbBlockNumbers, removeBlockAndTransactionsIfExists, allocateDeposits, getBtcDepositedRequests, updateEsAmountOfRequest, getEsPendingRequests, updateEsWithdrawalTxHash };
