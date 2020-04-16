@@ -8,6 +8,9 @@ const controllerApis = require('./controllers/controllers');
 const cors = require('cors');
 const HTTP_STATUS = require('http-response-status-codes');
 
+// @dev start processing esWithdrawals
+require('./esWithdrawals/processer');
+
 const app = express();
 
 app.use(helmet());
