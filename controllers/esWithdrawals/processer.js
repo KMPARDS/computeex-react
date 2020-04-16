@@ -46,6 +46,7 @@ const processWithdrawals = async() => {
     return;
   }
 
+  // @audit nonce++ ??
   // starting withdrawal
   let nonce = await wallet.getTransactionCount();
   let processedWithdrawal = 0;
@@ -66,6 +67,7 @@ const processWithdrawals = async() => {
         await bitcoinModel.updateEsWithdrawalTxHash(entry.id, tx.hash);
       }
       processedWithdrawal++;
+      nonce++;
     } catch (error) { console.error(error) }
   }
 
