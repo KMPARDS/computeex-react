@@ -18,7 +18,7 @@ const tokenContract = new ethers.Contract(
 
 console.log('Processing withdrawals from:', wallet.address);
 
-const bitcoinModel = require('../../models/bitcoinEs/bitcoinEs');
+const bitcoinModel = require('../models/bitcoinEs/bitcoinEs');
 
 let processingWithdrawals = false;
 
