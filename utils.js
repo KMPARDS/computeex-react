@@ -27,7 +27,11 @@ module.exports.isHexString = str => {
   return regexp.test(str.slice(2));
 }
 
-module.exports.concertToBTCDisplay = btcAmount => {
+module.exports.isWalletAddress = str => {
+  return module.exports.isHexString(str) && str.length === 42;
+}
+
+module.exports.concertToBTCDisplay = (btcAmount, all) => {
   const str = typeof btcAmount === 'string' ? btcAmount : String(btcAmount);
   if(isNaN(Number(str))) {
     throw new Error('Invalid btc amount: ' + btcAmount);
@@ -45,3 +49,7 @@ module.exports.concertToBTCDisplay = btcAmount => {
   arr[1] += '0'.repeat(8 - arr[1].length);
   return arr.join('.');
 }
+
+module.exports.getSatoshisFromBtcAmount = btcAmount => Math.round(+btcAmount * 10**8);
+
+module.exports.getBtcAmountFromSatoshis = satoshis => +btcAmount / 10**8;

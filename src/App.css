@@ -153,3 +153,9 @@ hr {
 .transaction-card span {
   display: block;
 }
+
+.deposit-request-div {
+  border: 1px solid #fff;
+  margin: 1rem 0;
+  padding: 1rem;
+}

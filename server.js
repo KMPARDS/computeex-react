@@ -8,6 +8,9 @@ const controllerApis = require('./controllers/controllers');
 const cors = require('cors');
 const HTTP_STATUS = require('http-response-status-codes');
 
+// @dev start processing esWithdrawals
+require('./esWithdrawals/processer');
+
 const app = express();
 
 app.use(helmet());
@@ -32,7 +35,10 @@ app.use(session({
 }));
 
 app.use((req, res, next) => {
+  // req.session.upholdAccessToken = 'c8cdc219ed9dee46df22cdeda72c713bf37b0c46';
+  // req.session.upholdUserId = '532a8a5a-4336-4c9c-803a-07ea981d9916';
   console.log('\n'+req.originalUrl);
+  console.log({query: req.query, body: req.body});
   console.log('Session Id:', req.sessionID);
   console.log('Session Obj', req.session);
   next();

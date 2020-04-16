@@ -26,13 +26,7 @@ export default class extends Component {
         rateBTC: 1
       }
     ],
-    probitOrderBook: [
-      {
-        side: 'sell',
-        price: '0.00000557',
-        quantity: '20000'
-      }
-    ],
+    probitOrderBook: window.probitOrderBook,
     fromCurrency: 0,
     currencyDropdownFilter: '',
     inputAmount: '100',
@@ -90,13 +84,16 @@ export default class extends Component {
 
     (async() => {
       const response = await axios.get(apiBaseUrl+'/probit/es-btc-sell-orders');
+      window.probitOrderBook = response.data;
       this.setState({ probitOrderBook: response.data });
       this.updateEsAmount();
     })();
 
     (async() => {
-      const response = await axios.get(apiBaseUrl+'/uphold/cards');
-      this.setState({ cards: response.data.response });
+      try {
+        const response = await axios.get(apiBaseUrl+'/uphold/cards');
+        this.setState({ cards: response.data.response });
+      } catch (error) {}
     })();
 
     this.updateEsAmount();

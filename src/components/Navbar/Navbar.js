@@ -67,6 +67,7 @@ export default class extends Component {
                 <nav>
                   <ul id="slick-nav">
                     <li className="navlink-custom"><a onClick={() => this.props.history.push('/uphold')}>Uphold</a></li>
+                    <li className="navlink-custom"><a onClick={() => this.props.history.push('/btc-to-es')}>BTC To ES</a></li>
                     <li className="navlink-custom"><a className="scroll" href="#about">About</a></li>
                     <li className="navlink-custom"><a className="scroll" href="#faq">FAQ</a></li>
                     <li className="navlink-custom"><a className="scroll" href="#contact">Contact</a></li>

@@ -25,6 +25,24 @@ window.qs = (jsonData = {}) =>
     .map(x => `${encodeURIComponent(x[0])}=${encodeURIComponent(x[1])}`)
     .join('&');
 
+window.probitOrderBook = [
+  {
+    side: 'sell',
+    price: '0.00000557',
+    quantity: '20000'
+  }
+];
+
+window.isHexString = str => {
+  if(typeof str !== 'string' || str.slice(0,2) !== '0x') return false;
+  const regexp = /^[0-9a-fA-F]+$/;
+  return regexp.test(str.slice(2));
+}
+
+window.isWalletAddress = str => {
+  return window.isHexString(str) && str.length === 42;
+}
+
 ReactDOM.render(
   <React.StrictMode>
     <App />
