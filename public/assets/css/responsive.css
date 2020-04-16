@@ -119,7 +119,7 @@
     }
     .welcome-right {
         text-align: center;
-        padding: 50px 0;
+        padding: 50px 0 0 0;
     }
     .slicknav_menu {
         padding-top: 15px;
@@ -322,6 +322,9 @@
     }
     .single-blog-area.section-padding{
         padding-bottom: 0;
+    }
+    .welcome-area.v2 {
+        padding-top: 50px;
     }
 }
 
@@ -580,7 +583,7 @@
     }
     .welcome-right {
         text-align: center;
-        padding: 50px 0;
+        padding: 20px 0;
     }
     .single-footer li a {
         font-size: 14px;
@@ -598,7 +601,7 @@
         font-size: 14px;
     }
     .welcome-area.v2 {
-        padding-top: 100px;
+        padding-top: 50px;
     }
     .faq-area .col-12.offset-1, .community-area .col-lg-5.offset-2{
         margin: 0;
@@ -770,8 +773,8 @@
         line-height: 20px;
     }
     .logo-area img {
-        width: 90px;
-        height: 30px;
+        width:130px;
+        height:auto;
     }
     .slicknav_menu {
         padding-top: 8px;

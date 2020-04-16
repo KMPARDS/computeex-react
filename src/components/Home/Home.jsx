@@ -31,15 +31,16 @@ function Home() {
       </div>
   </div>
 
-  <div className="about-area wow fadeInUp" id="about">
+  <div className="section-padding about-area wow fadeInUp" id="about">
       <div className="space-30"></div>
       <div className="container">
           <div className="row">
               <div className="col-12 text-center">
                   <div className="heading">
-                      <h5>We are featured in</h5>
-                  </div>
-                  <div className="space-30"></div>
+                        <h5>A featured in</h5>
+                        <div className="space-10"></div>
+                        <h1>ComputeEx</h1>
+                   </div>
               </div>
           </div>
           <div className="row">
@@ -88,7 +89,7 @@ function Home() {
                   </div>
               </div>
           </div>
-          <div className="space-90"></div>
+          <div className="space-30"></div>
           <div className="row">
               <div className="col-12 col-md-6">
                   <div className="about-mid-img">

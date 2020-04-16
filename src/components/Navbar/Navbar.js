@@ -77,7 +77,7 @@ export default class extends Component {
             </div>
             <div className="col-4 col-lg-2 text-right">
               {!this.state.userLoggedIn
-                ? <a onClick={() => this.props.history.push('/uphold')} className="btn-custom-light">Login</a>
+                ? <a onClick={() => this.props.history.push('/uphold')} className="btn-custom-light com-btn">Login</a>
                 : <span onClick={() => this.props.history.push('/uphold/account')} className="cursor-pointer">Welcome {window.user.firstName}</span>}
             </div>
           </div>
