@@ -54,6 +54,12 @@ router.get('/btc-amount-available', async(req, res) => {
 router.post('/register-deposit', async(req, res) => {
   if(!isWalletAddress(req.body.walletAddress)) {
     return res.status(HTTP_STATUS.CLIENT.BAD_REQUEST).json(
+      errorObj('invalid wallet address')
+    );
+  }
+
+  if(!req.body.btcAmount || isNaN(Number(req.body.btcAmount))) {
+    return res.status(HTTP_STATUS.CLIENT.BAD_REQUEST).json(
       errorObj('btcAmount is not available')
     );
   }
@@ -91,6 +97,12 @@ router.get('/btc-deposit-address', async(req, res) => {
 });
 
 router.get('/get-requests', async(req, res) => {
+  if(!isWalletAddress(req.query.walletAddress)) {
+    res.status(HTTP_STATUS.CLIENT.NOT_ACCEPTABLE).json(
+      errorObj('Invalid wallet address')
+    );
+  }
+
   const result = await bitcoinModel.getUserTransactions(req.query.walletAddress);
   res.status(HTTP_STATUS.SUCCESS.OK).json(
     successObj(result)
