@@ -94,7 +94,7 @@ const parseTransactionRow = row => {
     amount:  upholdTxObj.destination.amount,
     currency:  upholdTxObj.destination.currency,
   };
-
+  if(parsed.txHash) parsed.txHash = '0x' + row.txHash.toString('hex');
   return parsed;
 }
 
@@ -112,15 +112,21 @@ const getTransactions = async(userId) => {
   return result.map(parseTransactionRow);
 }
 
-const updateTxStatus = async(transactionId, status) => {
-  await queryPromise(`UPDATE transfers SET status = '${status}', updatedAt = NOW() WHERE transactionId = ${fromRfc4122(transactionId)}`);
+const updateTxStatusReceived = async(transactionId) => {
+  await queryPromise(`UPDATE transfers SET status = 'received', updatedAt = NOW() WHERE transactionId = ${fromRfc4122(transactionId)}`);
+}
+
+const getReceivedTransfers = async() => {
+  const result = await queryPromise(`SELECT * FROM transfers WHERE status = 'received'`);
+
+  return result.map(parseTransactionRow);
 }
 
 const updateTxHash = async(transactionId, txHash) => {
-  await queryPromise(`UPDATE transfers SET txHash = ${txHash} WHERE transactionId = ${fromRfc4122(transactionId)}`);
+  await queryPromise(`UPDATE transfers SET txHash = ${txHash}, status = 'processed' WHERE transactionId = ${fromRfc4122(transactionId)}`);
 }
 
 module.exports = {
   insertOrUpdateUser, getWalletAddress, updateWalletAddress, insertTransaction, getTransaction,
-  getTransactions, updateTxStatus, updateTxHash
+  getTransactions, updateTxStatusReceived, getReceivedTransfers, updateTxHash
 };

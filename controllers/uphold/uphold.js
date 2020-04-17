@@ -5,6 +5,7 @@ const axios = require('axios');
 const HTTP_STATUS = require('http-response-status-codes');
 const { successObj, errorObj, isHexString } = require('../../utils');
 const upholdModel = require('../../models/uphold/uphold');
+const { fetchEsBtcSellOrders, getEsAmountFromBTC } = require('../probit/utils');
 
 const { default: SDK } = require('@uphold/uphold-sdk-javascript');
 const generateSdk = () => new SDK({
@@ -190,11 +191,13 @@ router.post('/create-transaction', requiresLogin, async(req, res) => {
   console.log(upholdTransactionObject);
 
   // generate ES amount
-
+  const orderBook = await fetchEsBtcSellOrders();
+  const esAmount = getEsAmountFromBTC(upholdTransactionObject.destination.amount, orderBook);
+  console.log({esAmount});
   const args = {
     userId: req.session.upholdUserId,
     upholdTransactionObject,
-    esAmount: 0,
+    esAmount,
     walletAddress
   };
 
@@ -232,30 +235,36 @@ router.post('/commit-transaction', requiresLogin, async(req, res) => {
     access_token: req.session.upholdAccessToken
   });
 
-  const transaction = await upholdModel.getTransaction(req.body.transactionId);
+  try {
+    const transaction = await upholdModel.getTransaction(req.body.transactionId);
 
-  const args = {
-    cardId: transaction.origin.cardId,
-    transactionId: transaction.transactionId,
-    body: {
-      message: 'Buy BTC'
+    const args = {
+      cardId: transaction.origin.cardId,
+      transactionId: transaction.transactionId,
+      body: {
+        message: 'Buy BTC'
+      }
     }
+
+    if(req.body.securityCode) {
+      args.body.securityCode = req.body.securityCode;
+    }
+
+    const output = await sdk.commitCardTransaction(
+      ...Object.values(args)
+    );
+
+    // mark tx complete in database
+    await upholdModel.updateTxStatusReceived(req.body.transactionId);
+
+    res.status(HTTP_STATUS.SUCCESS.OK).json(
+      successObj(output)
+    );
+  } catch(error) {
+    return res.status(HTTP_STATUS.CLIENT.BAD_REQUEST).json(
+      errorObj(error.message)
+    );
   }
-
-  if(req.body.securityCode) {
-    args.body.securityCode = req.body.securityCode;
-  }
-
-  const output = await sdk.commitCardTransaction(
-    ...Object.values(args)
-  );
-
-  // mark tx complete in database
-  await upholdModel.updateTxStatus(req.body.transactionId, 'received');
-
-  res.status(HTTP_STATUS.SUCCESS.OK).json(
-    successObj(output)
-  );
 });
 
 module.exports = router;
