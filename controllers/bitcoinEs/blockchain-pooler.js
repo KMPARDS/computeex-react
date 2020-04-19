@@ -8,9 +8,11 @@ const { fetchEsBtcSellOrders, getEsAmountFromBTC } = require('../probit/utils');
 //   {blockcypher: 'c29426c605e541bea307de3a54d94fcf'}
 // );
 
+const network = process.env.NODE_ENV === 'production' ? 'main' : 'test3';
+
 const provider = new bitcoin.providers.FallbackProvider([
-  new bitcoin.providers.BitapsProvider('test3'),
-  new bitcoin.providers.BlockcypherProvider('test3', 'a3c1aad4c151458da9b1fdee2a7fbdf3'),
+  new bitcoin.providers.BitapsProvider(network),
+  new bitcoin.providers.BlockcypherProvider(network, 'a3c1aad4c151458da9b1fdee2a7fbdf3'),
 ], false);
 
 /// @dev saving blocks that were not saved
