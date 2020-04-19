@@ -3,11 +3,6 @@ const bitcoin = require('bitcoin3js');
 const { isHexString, isBytes32Hex } = require('../../utils');
 const { fetchEsBtcSellOrders, getEsAmountFromBTC } = require('../probit/utils');
 
-// const provider = bitcoin.getDefaultProvider(
-//   process.env.NODE_ENV === 'production' ? 'btc' : 'test3',
-//   {blockcypher: 'c29426c605e541bea307de3a54d94fcf'}
-// );
-
 const network = process.env.NODE_ENV === 'production' ? 'main' : 'test3';
 
 const provider = new bitcoin.providers.FallbackProvider([
