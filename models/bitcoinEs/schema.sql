@@ -22,7 +22,7 @@ CREATE TABLE btcBlocks (
   -- transactions array will be stored in JSON encoded
   transactions TEXT,
   createdAt TIMESTAMP DEFAULT NOW(),
-  updatedAt TIMESTAMP DEFAULT NOW()
+  updatedAt TIMESTAMP
 );
 
 -- transactions waiting for confirmation these transactions also might be
@@ -36,36 +36,36 @@ CREATE TABLE btcDeposits (
 
 
 
-INSERT INTO btcRequests (satoshiAmount, esAddress)
-  SELECT * FROM (SELECT
-    10000002,
-    0x1234567812345678123456781234567812345678
-  ) AS tmp
-  WHERE NOT EXISTS (
-    SELECT satoshiAmount FROM btcRequests WHERE btcDepositTxHash = NULL
-  ) LIMIT 1;
-
-INSERT INTO btcRequests (satoshiAmount, esAddress)
-  SELECT * FROM (SELECT
-    10000032,
-    0x9234567812345678123456781234567812345678
-  ) AS tmp
-  WHERE NOT EXISTS (
-    SELECT satoshiAmount FROM btcRequests WHERE btcDepositTxHash = NULL
-  ) LIMIT 1;
-
-INSERT INTO btcDeposits (transactionHash, blockHeight, value)
-  VALUES (0x3434567812345678123456781234567812345678123456781234567812345678, 2394, 10000002);
-
-INSERT INTO btcDeposits (transactionHash, blockHeight, value, btcRequestId)
-  VALUES (0x123456781234567812345678123456781234567812345678123456781234567A, 2395, 10000002, 45);
-
-INSERT INTO btcDeposits (transactionHash, blockHeight, value)
-  VALUES (0x5634567812345678123456781234567812345678123456781234567812345679, 2394, 10000032);
-
-
-SELECT * FROM btcRequests;
-SELECT * FROM btcDeposits;
+-- INSERT INTO btcRequests (satoshiAmount, esAddress)
+--   SELECT * FROM (SELECT
+--     10000002,
+--     0x1234567812345678123456781234567812345678
+--   ) AS tmp
+--   WHERE NOT EXISTS (
+--     SELECT satoshiAmount FROM btcRequests WHERE btcDepositTxHash = NULL
+--   ) LIMIT 1;
+--
+-- INSERT INTO btcRequests (satoshiAmount, esAddress)
+--   SELECT * FROM (SELECT
+--     10000032,
+--     0x9234567812345678123456781234567812345678
+--   ) AS tmp
+--   WHERE NOT EXISTS (
+--     SELECT satoshiAmount FROM btcRequests WHERE btcDepositTxHash = NULL
+--   ) LIMIT 1;
+--
+-- INSERT INTO btcDeposits (transactionHash, blockHeight, value)
+--   VALUES (0x3434567812345678123456781234567812345678123456781234567812345678, 2394, 10000002);
+--
+-- INSERT INTO btcDeposits (transactionHash, blockHeight, value, btcRequestId)
+--   VALUES (0x123456781234567812345678123456781234567812345678123456781234567A, 2395, 10000002, 45);
+--
+-- INSERT INTO btcDeposits (transactionHash, blockHeight, value)
+--   VALUES (0x5634567812345678123456781234567812345678123456781234567812345679, 2394, 10000032);
+--
+--
+-- SELECT * FROM btcRequests;
+-- SELECT * FROM btcDeposits;
 
 
 -- // an invalid select which also collects finalised entries
@@ -82,16 +82,16 @@ SELECT * FROM btcDeposits;
 --     AND btcRequests.satoshiAmount = btcDeposits.value;
 
 -- // select waiting for confirmation transactions of user
-SELECT
-  btcRequests.id AS id,
-  btcDeposits.transactionHash AS transactionHash,
-  btcDeposits.blockHeight AS blockHeight
-FROM btcRequests
-  INNER JOIN btcDeposits
-  ON btcRequests.status = 'waiting'
-    AND btcDeposits.btcRequestId IS NULL
-    AND btcRequests.satoshiAmount = btcDeposits.value
-    AND btcRequests.esAddress = 0x1234567812345678123456781234567812345678;
+-- SELECT
+--   btcRequests.id AS id,
+--   btcDeposits.transactionHash AS transactionHash,
+--   btcDeposits.blockHeight AS blockHeight
+-- FROM btcRequests
+--   INNER JOIN btcDeposits
+--   ON btcRequests.status = 'waiting'
+--     AND btcDeposits.btcRequestId IS NULL
+--     AND btcRequests.satoshiAmount = btcDeposits.value
+--     AND btcRequests.esAddress = 0x1234567812345678123456781234567812345678;
 
 
 
@@ -110,5 +110,5 @@ FROM btcRequests
 
 
 
-SELECT * FROM btcRequests;
-SELECT * FROM btcDeposits;
+-- SELECT * FROM btcRequests;
+-- SELECT * FROM btcDeposits;

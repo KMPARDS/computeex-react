@@ -9,7 +9,7 @@ CREATE TABLE users (
   -- wallet address of the user
   walletAddress BINARY(20),
   createdAt TIMESTAMP DEFAULT NOW(),
-  updatedAt TIMESTAMP DEFAULT NOW()
+  updatedAt TIMESTAMP
 );
 
 CREATE TABLE transfers (
@@ -26,6 +26,6 @@ CREATE TABLE transfers (
   -- transaction of processed ES withdrawal
   txHash BINARY(32),
   createdAt TIMESTAMP DEFAULT NOW(),
-  updatedAt TIMESTAMP DEFAULT NOW(),
+  updatedAt TIMESTAMP,
   INDEX(userId, status)
 );
