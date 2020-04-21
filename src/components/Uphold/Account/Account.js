@@ -152,7 +152,7 @@ export default class extends Component {
                       return <>Transaction is processed</>
                   }
                 })()}</td>
-              <td>{transaction.txHash ? <span>{transaction.txHash.slice(0,6)}...{transaction.txHash.slice(60)}<br/><a href={`https://${process.env.REACT_APP_ENV==='development'?'kovan.':''}etherscan.io/tx/0xce291343ebc8b1b16f86fd2d9bc756fbb5d6d5e7c90caabbc4166749f8f85d73`} target="_blank">View on EtherScan</a></span> : <>
+              <td>{transaction.txHash ? <span>{transaction.txHash.slice(0,6)}...{transaction.txHash.slice(60)}<br/><a href={`https://${process.env.REACT_APP_ENV==='development'?'kovan.':''}etherscan.io/tx/${transaction.txHash}`} target="_blank">View on EtherScan</a></span> : <>
                 <button
                   style={{ marginTop: '5px' }}
                   className="btn-custom light"
