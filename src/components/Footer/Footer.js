@@ -11,7 +11,7 @@ function Footer() {
                             <a href="#"><img src="/img/compute-ex32.png" alt="" /></a>
                         </div>
                         <div className="space-20"></div>
-                        <p>Swimming hundreds of feet beneath the ocean’s surface in many parts of the world are prolific architects called giant larvaceans. </p>
+                        <p>There are numerous digital asset exchanges with different rates and complications which make trading on multiple exchanges complicated. ComputeEx comes with a one stop solution to make the trading hassle free by fetching the best rates from different exchanges at once place.</p>
                         <div className="space-10"></div>
                         <p>Copyright &copy; {new Date().getFullYear()}</p>
                     </div>
