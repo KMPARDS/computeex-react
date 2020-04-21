@@ -33,7 +33,7 @@ export default class extends Component {
     errorInputAmount: false,
     esAmount: '',
     userLoggedIn: false,
-    cards: [],
+    cards: null,
     creatingTransaction: false,
     modalTransactionId: null
   };

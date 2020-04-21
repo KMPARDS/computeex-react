@@ -88,7 +88,10 @@ export default class extends Component {
         }
       </p>
       <p>Uphold Cards:</p>
-      <div className="row">
+      {this.props.cards === null
+        ? <p>Loading your cards...</p>
+        : <div className="row">
+        {this.props.cards.length === 0 ? <>Looks like you don't have any cards. Go to <a href="https://uphold.com" target="_blank">Uphold.com</a>, and add funds. Then you will be able to use your Uphold account on ComputeEx.</> : null}
         {this.props.cards.map((card, cardIndex) => (
           <div key={cardIndex} className="col-sm-12 col-md-6 col-lg-4 col-xl-3">
             <div className="uphold-card">
@@ -107,16 +110,39 @@ export default class extends Component {
             </div>
           </div>
         ))}
-      </div>
+      </div>}
+      {(() => {
+        if(this.props.cards) {
+          const isAvailable = this.props.cards.filter(card => +card.available).length !== 0;
+          const isBalance = this.props.cards.filter(card => +card.balance).length !== 0;
+
+          if(!isAvailable && isBalance) {
+            return <p>You have funds pending under Uphold verification, once it's done you'll be able to use them for purchase ES.</p>;
+          }
+
+          if(!isBalance) {
+            return <p>You don't have balance in your Uphold wallet. Go to <a href="https://uphold.com" target="_blank">Uphold.com</a>, and add funds. Then you will be able to use your Uphold account on ComputeEx to purchase ES.</p>;
+          }
+        }
+      })()}
       {this.state.transactions.length
         ? <>
             <p style={{marginTop: '50px'}}>Transactions:</p>
-            {this.state.transactions.map((transaction, i) => (
-              <div key={i} className="transaction-card">
-                <span>ID: {transaction.transactionId}</span>
-                <span><u>{transaction.origin.amount} {transaction.origin.currency}</u> FOR <u>{transaction.esAmount} ES</u></span>
-                <span>{new Date(transaction.createdAt).toLocaleString()}</span>
-                <span><b>Status:</b> {(() => {
+            <table width="100%" border="1">
+            <tr>
+              <th>Transaction</th>
+              <th>Time</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+            {this.state.transactions.reverse().map((transaction, i) => (
+              <tr key={i}>
+                <td>
+                  {transaction.transactionId}<br />
+                  <u>{transaction.origin.amount} {transaction.origin.currency}</u> FOR <u>{transaction.esAmount} ES</u>
+                </td>
+                <td>{new Date(transaction.createdAt).toLocaleString()}</td>
+                <td>{(() => {
                   switch(transaction.status) {
                     case 'pending':
                       return <>Transfer of {transaction.origin.amount} {transaction.origin.currency} is pending.</>
@@ -125,10 +151,19 @@ export default class extends Component {
                     case 'processed':
                       return <>Transaction is processed</>
                   }
-                })()}</span>
-              <button onClick={() => this.setState({ modalTransactionId: transaction.transactionId })}>View</button>
-              </div>
+                })()}</td>
+              <td>{transaction.txHash ? <span>{transaction.txHash.slice(0,6)}...{transaction.txHash.slice(60)}<br/><a href={`https://${process.env.REACT_APP_ENV==='development'?'kovan.':''}etherscan.io/tx/0xce291343ebc8b1b16f86fd2d9bc756fbb5d6d5e7c90caabbc4166749f8f85d73`} target="_blank">View on EtherScan</a></span> : <>
+                <button
+                  style={{ marginTop: '5px' }}
+                  className="btn-custom light"
+                  onClick={() => this.setState({ modalTransactionId: transaction.transactionId })}
+                >
+                  View
+                </button>
+              </>}</td>
+              </tr>
             ))}
+            </table>
           </>
         : null}
 

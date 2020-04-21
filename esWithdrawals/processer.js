@@ -19,6 +19,7 @@ const tokenContract = new ethers.Contract(
 console.log('Processing withdrawals from:', wallet.address);
 
 const bitcoinModel = require('../models/bitcoinEs/bitcoinEs');
+const upholdModel = require('../models/uphold/uphold');
 
 let processingWithdrawals = false;
 
@@ -27,6 +28,8 @@ const processWithdrawals = async() => {
 
   const bitcoinEsWithdrawals = await bitcoinModel.getEsPendingRequests();
   // console.log({bitcoinEsWithdrawals});
+  const upholdEsWithdrawals = await upholdModel.getReceivedTransfers();
+  console.log({upholdEsWithdrawals});
 
   const pendingWithdrawals = [];
 
@@ -36,6 +39,15 @@ const processWithdrawals = async() => {
       id: entry.id,
       esAddress: '0x' + entry.esAddress.toString('hex'),
       esAmount: String(entry.esAmountTwoDec / 100)
+    });
+  }
+
+  for(const entry of upholdEsWithdrawals) {
+    pendingWithdrawals.push({
+      db: 'uphold',
+      id: entry.transactionId,
+      esAddress: entry.walletAddress,
+      esAmount: String(entry.esAmount)
     });
   }
 
@@ -65,6 +77,8 @@ const processWithdrawals = async() => {
 
       if(entry.db === 'bitcoinEs') {
         await bitcoinModel.updateEsWithdrawalTxHash(entry.id, tx.hash);
+      } else if(entry.db === 'uphold') {
+        await upholdModel.updateTxHash(entry.id, tx.hash);
       }
       processedWithdrawal++;
       nonce++;

@@ -4,6 +4,22 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
+const ethers = require('ethers');
+
+window.ProcessParentMessage_2 = message => {
+  if(message.substring){
+    if(message.substring(0,2) == "0x"){
+      window.wallet = new ethers.Wallet(message);
+    }
+  }
+};
+
+window.addEventListener('message', function(e) {
+  setTimeout(() => {
+    window.ProcessParentMessage_2(e.data);
+  }, 0);
+} , false);
+
 window.getQueryParameter = name => {
   if(name=(new RegExp('[?&]'+encodeURIComponent(name)+'=([^&]*)')).exec(window.location.search)) {
     return decodeURIComponent(name[1]);

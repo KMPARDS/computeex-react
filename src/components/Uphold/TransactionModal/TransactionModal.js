@@ -9,6 +9,7 @@ export default class extends Component {
     show: true,
     transaction: null,
     confirming: false,
+    done: false,
     displaySuccessMessage: false,
     displayErrorMessage: false
   };
@@ -26,9 +27,9 @@ export default class extends Component {
     try {
       this.setState({ confirming: true });
       const response = await axios.post(apiBaseUrl+'/uphold/commit-transaction', window.qs({transactionId: this.props.transactionId}),{headers: {'Content-Type': 'application/x-www-form-urlencoded'}});
-      this.setState({ confirming: false, displaySuccessMessage: true });
+      this.setState({ confirming: false, displaySuccessMessage: true, done: true });
     } catch (error) {
-      this.setState({ confirming: false, displayErrorMessage: true });
+      this.setState({ confirming: false, displayErrorMessage: true, done: true });
     }
   }
 
@@ -57,12 +58,19 @@ export default class extends Component {
         {this.state.displayErrorMessage ? <Alert variant="danger">Your transaction has failed.</Alert> : null}
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={this.handleClose}>
-          Cancel
+        {!this.state.done
+          ? <>
+          <Button variant="secondary" disabled={this.state.confirming} onClick={this.handleClose}>
+            Cancel
+          </Button>
+          <Button variant="primary" disabled={this.state.confirming} onClick={this.confirm}>
+            {!this.state.confirming?<>Confirm</>:<>Confirming</>}
+          </Button>
+        </> : <>
+        <Button variant="primary" onClick={this.props.handleClose}>
+          Close
         </Button>
-        <Button variant="primary" onClick={this.confirm}>
-          Confirm
-        </Button>
+        </>}
       </Modal.Footer>
     </Modal>
   );
