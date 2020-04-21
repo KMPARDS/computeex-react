@@ -10,14 +10,10 @@ function Home() {
               <div className="col-12 col-md-6 align-self-center">
                   <div className="welcome-right">
                       <div className="welcome-text">
-                           <h1>Fast Growing ICO
-                          Agency for Blockchain
-                          Investors and Founders </h1>
-                          <h4>Sifting through teaspoons of clay and sand scraped from the
-  floors of caves, German researchers have managed.</h4>
+                           <h1>ComputeEx</h1>
+                          <h4>Trade top digital assets in major exchanges irrespective of whether you have an account on that exchange or not.</h4>
                       </div>
                       <div className="welcome-btn">
-                          <a href="#" className="gradient-btn v2 mr-20">Register for the ICO</a>
                           <a href="#" className="gradient-btn v2">Download Whitepaper</a>
                       </div>
                   </div>
@@ -104,7 +100,7 @@ function Home() {
                       <h1>A Platform for Exchange
                       Cyrptocurrency and shares</h1>
                       <div className="space-10"></div>
-                      <p>Mauna Loa, the biggest volcano on Earth  half the Island of Hawaii. Just 35 miles to the northeast, Mauna Kea, known to native Hawaiians as Mauna a Wakea, rises nearly 14,000 feet above sea level.  If they are so close together, how did they develop in two parallel tracks .Sifting through teaspoons of clay and sand scraped from the floors of caves.</p>
+                      <p>There are numerous digital asset exchanges with different rates and complications which make trading on multiple exchanges complicated. ComputeEx comes with a one stop solution to make the trading hassle free by fetching the best rates from different exchanges at once place.</p>
                   </div>
                   <div className="space-30"></div>
                   <a href="#" className="gradient-btn v2 about-btn"> <i className="fa fa-send-o"></i> join us on telegraph</a>
