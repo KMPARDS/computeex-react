@@ -215,6 +215,14 @@ const updateEsWithdrawalTxHash = async (id, txHash) => {
   `);
 };
 
+const suspendEnoughOldRequests = async () => {
+  await queryPromise(
+    `UPDATE btcRequests SET status = 'suspended' WHERE status = 'waiting' AND createdAt < now() - INTERVAL ${
+      process.env.BITCOINES_SUSPEND_DAYS || 3
+    } DAY;`
+  );
+};
+
 module.exports = {
   insertRequest,
   isRequestAllowed,
@@ -230,4 +238,5 @@ module.exports = {
   updateEsAmountOfRequest,
   getEsPendingRequests,
   updateEsWithdrawalTxHash,
+  suspendEnoughOldRequests,
 };

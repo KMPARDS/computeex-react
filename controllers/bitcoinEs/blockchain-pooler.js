@@ -305,3 +305,5 @@ provider.on('block', async (newBlockNumber) => {
       : 'No request updated'
   );
 });
+
+setInterval(bitcoinModel.suspendEnoughOldRequests, 60000);
