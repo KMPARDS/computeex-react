@@ -14,31 +14,33 @@ require('./esWithdrawals/processer');
 const app = express();
 
 app.use(helmet());
-app.use(cors({
-  credentials: true
-}));
+app.use(
+  cors({
+    credentials: true,
+  })
+);
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {
   res.set({
     'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
     'Strict-Transport-Security': 'max-age=31536000; preload',
-    'Access-Control-Allow-Origin': '*'
+    'Access-Control-Allow-Origin': '*',
   });
   return next();
 });
 
-app.use(session({
-  secret: process.env.SESSION_SECRET || '123456789',
-  resave: true,
-  saveUninitialized: true,
-}));
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || '123456789',
+    resave: true,
+    saveUninitialized: true,
+  })
+);
 
 app.use((req, res, next) => {
-  // req.session.upholdAccessToken = 'c8cdc219ed9dee46df22cdeda72c713bf37b0c46';
-  // req.session.upholdUserId = '532a8a5a-4336-4c9c-803a-07ea981d9916';
-  console.log('\n'+req.originalUrl);
-  console.log({query: req.query, body: req.body});
+  console.log('\n' + req.originalUrl);
+  console.log({ query: req.query, body: req.body });
   console.log('Session Id:', req.sessionID);
   console.log('Session Obj', req.session);
   next();
@@ -46,17 +48,16 @@ app.use((req, res, next) => {
 
 app.use(function (err, req, res, next) {
   console.error(err);
-  res.status(HTTP_STATUS.SERVER.INTERNAL_SERVER_ERROR).send('Something broke!')
+  res.status(HTTP_STATUS.SERVER.INTERNAL_SERVER_ERROR).send('Something broke!');
 });
 
 app.get('/ping', (req, res) => {
-  if(req.session && !req.session.count) {
+  if (req.session && !req.session.count) {
     req.session.count = 0;
   }
   // console.log({});
-  res.send('Pong' + (++req.session.count));
+  res.send('Pong' + ++req.session.count);
 });
-
 
 app.use('/api', controllerApis);
 
