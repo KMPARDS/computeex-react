@@ -3,10 +3,10 @@
 @import url('https://fonts.googleapis.com/css?family=Montserrat:300,300i,400,400i,500,500i,600,600i,700,800');
 
 body{
-	background: #062489;
-	font-family: 'Montserrat', sans-serif;
-	font-size: 14px;
-	color: #cbe5ff;
+  background: #062489;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  color: #cbe5ff;
   overflow-x: hidden;
 
 }
@@ -18,9 +18,9 @@ h4,
 h5,
 h6
 {
-	color: #fff;
-	font-family: 'Montserrat', sans-serif;
-	text-transform: capitalize;
+  color: #fff;
+  font-family: 'Montserrat', sans-serif;
+  text-transform: capitalize;
 }
 
 ul{
@@ -175,8 +175,8 @@ a.single-about,
   height: 100%;
 }
 .welcome-area{
-	position: relative;
-	z-index: 999999;
+  position: relative;
+  z-index: 999999;
   padding-top: 80px;
 }
 
@@ -508,7 +508,7 @@ roadmap area css
 ======================*/
 
 .roadmap-area{
-	background: #031b69;
+  background: #031b69;
   overflow: hidden;
 }
 
@@ -982,6 +982,16 @@ community area css
   background: #0e76a8;
 }
 
+.single-community a.facebook i{
+  background:#3b5998;
+}
+.single-community a.instagram i{
+ background: #f09433; 
+background: -moz-linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); 
+background: -webkit-linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%); 
+background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%); 
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f09433', endColorstr='#bc1888',GradientType=1 );
+}
 .single-community a.dribbble i {
   background: #E84C88;
 }
@@ -1718,8 +1728,94 @@ a.gradient-btn:hover:after{
 
 
 .com-btn{
- padding: 5px 23px;
-cursor: pointer;
+  padding: 5px 23px;
+  cursor: pointer;
   background: transparent;
   border: 2px solid #1452e2;
+}
+
+.Faq-accordian .card {
+  margin-bottom: 15px;
+  border-radius: 10px;
+  border:none;
+}
+.Faq-accordian .card-header {
+  background: #001763;
+}
+.Faq-accordian .card-body{
+  color: #000;
+  font-size: 16px;
+}
+.Faq-accordian .btn-link {
+  font-weight: 600;
+  color: #fff;
+  font-size: 18px;
+}
+.Faq-accordian .btn.btn-link::after {
+  position: absolute;
+  left: -6%;
+}
+.Faq-accordian .card-body{
+  color: #000;
+  font-size: 16px;
+}
+.Faq-accordian .collapse {
+    background: #fff;
+}
+
+.product-tab .nav-tabs a{
+    color: #fff;
+}
+.product-tab .nav-tabs {
+    color: #fff;
+}
+.single-about-text p{ 
+  font-size: 16px; 
+}
+.single-about-img img {
+    width: auto;
+    height: 153px;
+}
+.multi-works .single-about-text h4{
+   font-size: 15px;
+  min-height: 37px;
+}
+.mar-left{
+  margin-left:130px;
+}
+
+
+.dropbtn {
+  color: white;
+  border: none;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+    text-align: left;
+    color: #000 !important;
+    font-size: 14px !important;
+}
+
+
+
+.dropdown:hover .dropdown-content {display: block;}
+
+.dropdown:hover .dropbtn {background-color: #3e8e41;}
+
+.welcome-img  img.mar-left{
+ marg
 }
