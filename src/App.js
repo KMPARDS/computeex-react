@@ -5,8 +5,12 @@ import Footer from './components/Footer/Footer';
 import Home from './components/Home/Home';
 import Uphold from './components/Uphold/Uphold';
 import BtcToEs from './components/BtcToEs/BtcToEs';
+import Lending from './components/Lending/Lending';
+import Multiexchange from './components/Multiexchange/Multiexchange';
+
 
 import './App.css';
+import './custom.css';
 
 function App() {
   return (
@@ -16,6 +20,8 @@ function App() {
         <Route path="/" exact component={Home} />
         <Route path="/uphold" exact component={Uphold} />
         <Route path="/btc-to-es" exact component={BtcToEs} />
+        <Route path="/lending" exact component={Lending} />
+        <Route path="/multiexchange" exact component={Multiexchange} />
       </Switch>
       <Route path="/*" component={Footer} />
     </BrowserRouter>

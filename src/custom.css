@@ -1,0 +1,157 @@
+.navlink-custom, .logo-area, .cursor-pointer {
+  cursor: pointer;
+}
+
+.form-input {
+  border-radius: 5px;
+  border: none;
+  width: 100%;
+  padding: 10px;
+}
+
+.form-input.light {
+  background: #fff3;
+  color: #fff;
+}
+
+.form-input.dark {
+  background: #0006;
+}
+
+.form-input.large, .input-group-append.large button {
+  font-size: 1.5rem;
+}
+
+.input-group-append.light button {
+  color: #fff;
+}
+
+.input-group-append button {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  padding: 10px;
+}
+
+.es-amount-number {
+  font-size: 3rem;
+}
+
+.es-amount-symbol {
+  font-size: 3rem;
+  font-weight: 700;
+}
+
+hr {
+  height: 1px;
+  background-color: #ccc;
+}
+
+.dashboard-container {
+  background-color: #fff4;
+  color: #000;
+  margin-top: 2rem;
+  padding: 2rem;
+  border-radius: 0.5rem;
+}
+
+.dashboard-container {
+  color: #fff;
+  font-weight: 700;
+}
+
+.dashboard-container input {
+  color: #000;
+}
+
+.welcome-text {
+  color: #fff;
+}
+
+.btn-custom {
+  padding: .5rem;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-custom.large {
+  padding: 1rem;
+}
+
+.btn-custom.light {
+  background: white;
+  color: #111 !important;
+}
+
+.btn-custom.dark {
+  background: #222;
+  color: #eee !important;
+}
+
+.modal-backdrop, .modal {
+  z-index: 10000000;
+}
+
+.modal-dialog-centered {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+  align-items: center;
+  min-height: calc(100% - (.5rem * 2))
+}
+
+.modal-dialog-centered::before {
+  display: block;
+  height: calc(100vh - (.5rem * 2));
+  content: ""
+}
+
+@media (min-width:576px) {
+  .modal-dialog-centered {
+    min-height: calc(100% - (1.75rem * 2))
+  }
+
+  .modal-dialog-centered::before {
+    height: calc(100vh - (1.75rem * 2))
+  }
+}
+
+.modal-content {
+  color: #000;
+}
+
+.uphold-card, .transaction-card {
+  border: 1px solid #fff;
+  border-radius: 4px;
+  padding: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.uphold-card:hover {
+  background-color: #fff2;
+  /* color: #000; */
+}
+
+
+.uphold-card .uphold-label {
+  display: block;
+}
+
+.uphold-card .uphold-currency {
+  display: block;
+}
+
+.uphold-card .uphold-available {
+  display: block;
+}
+
+.uphold-card .uphold-balance {
+  display: block;
+}
+
+.transaction-card span {
+  display: block;
+}
+
+
