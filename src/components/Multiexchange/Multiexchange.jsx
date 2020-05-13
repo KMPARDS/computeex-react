@@ -1,7 +1,7 @@
 import React from 'react';
 import { InputGroup, FormControl, Dropdown, DropdownButton ,Accordion,Container,Col,Row,Media,Button,Card,Tabs,Tab,Sonnet  } from 'react-bootstrap';
 
-function Home() {
+function Multiexchange() {
   return (
     <>
     <div className="welcome-area wow fadeInUp"  id="about">
@@ -11,8 +11,9 @@ function Home() {
               <div className="col-12 col-md-6 align-self-center">
                   <div className="welcome-right">
                       <div className="welcome-text">
-                           <h1>One-stop solution for hassle free trading powered by Era Swap</h1>
-                          <h4>Now trade on different exchanges at one place in a Peer to Peer mode, with ComputeEx P2P Lend and Borrow</h4>
+                           <h5>Multi Exchange</h5>
+                           <h1>Smart Contract</h1>
+                           <h4>ComputeEx will use smart contract on the platform so that neither buyers nor sellers have to trust or know each other to conduct transaction freely. </h4>
                       </div>
                       <div className="welcome-btn">
                           <a href="https://eraswap.life/" target="_blank" className="gradient-btn v2 mr-20">Connect to wallet </a>
@@ -22,7 +23,7 @@ function Home() {
               </div>
               <div className="col-12 col-md-6">
                   <div className="welcome-img">
-                      <img src="/assets/img/welcome-img.png" alt="" />
+                      <img src="/assets/img/smartcontract1.png" alt="" classname="mar-left"/>
                   </div>
               </div>
           </div>
@@ -36,9 +37,9 @@ function Home() {
           <div className="row">
               <div className="col-12 text-center">
                   <div className="heading">
-                        <h5>ComputeEx</h5>
+                        <h5>Multi Exchange</h5>
                         <div className="space-10"></div>
-                        <h1>Problems</h1>
+                        <h1>How it works</h1>
                    </div>
               </div>
           </div>
@@ -46,86 +47,46 @@ function Home() {
       </div>
   </div>
 
-  <div className="single-about-area wow fadeInUp">
+  <div className=" wow fadeInUp multi-works">
       <div className="container">
           <div className="row">
-              <div className="col-lg-6">
+              <div className="col-lg-3">
                   <a href="#" className="single-about">
                       <div className="single-about-img">
-                          <img src="/assets/img/multipleexchanges.png" alt="" />
+                          <img src="/assets/img/choosecryto.png" alt="" />
                       </div>
                       <div className="single-about-text">
-                          <h4>Multiple Exchanges</h4>
-                          <p>There are so many cryptocurrency exchanges in the world right now that it is getting cumbersome to keep a track of all the assets across these exchanges. </p>
+                          <h4>Choose the crypto pair</h4>
                       </div>
                   </a>
               </div>
-              <div className="col-lg-6">
+              <div className="col-lg-3">
                   <a href="#" className="single-about">
                       <div className="single-about-img">
-                          <img src="/assets/img/credentials-Issue.png" alt="" />
+                          <img src="/assets/img/confirmthetransaction.png" alt="" />
                       </div>
                       <div className="single-about-text">
-                          <h4>Numerous KYC & Credentials Issue</h4>
-                          <p>It’s very challenging when your favourite token is getting on an exchange you aren’t registered on. You are forced to get registered on that exchange. .</p>
+                          <h4>Confirm the transaction and sign in/sign </h4>
                       </div>
                   </a>
               </div>
-             
-            </div>
-      </div>
-      <div className="space-90"></div>
-  </div>
-
-  <div className="section-padding about-area wow fadeInUp" id="about">
-      <div className="space-30"></div>
-      <div className="container">
-          <div className="row">
-              <div className="col-12 text-center">
-                  <div className="heading">
-                        <h5>EraSwap has come up with the solution ComputeEx.</h5>
-                        <div className="space-10"></div>
-                        <h1>Solution</h1>
-                   </div>
-              </div>
-          </div>
-         
-      </div>
-  </div>
-
-  <div className="single-about-area wow fadeInUp">
-      <div className="container">
-          <div className="row">
-              <div className="col-lg-4">
+               <div className="col-lg-3">
                   <a href="#" className="single-about">
                       <div className="single-about-img">
-                          <img src="/assets/img/singlepointofcontact.png" alt="" />
+                          <img src="/assets/img/sendtheexactamount.png" alt="" />
                       </div>
                       <div className="single-about-text">
-                          <h4>Single Point of Contact</h4>
-                          <p>ComputeEx brings all the crypto exchanges at a single point of contact. Users will be charged to execute trades on their behalf and there will be a 50% discount for Era Swap users paying the fees in form of EraSwap Tokens.</p>
+                          <h4>Send the Excact amount to the address </h4>
                       </div>
                   </a>
               </div>
-              <div className="col-lg-4">
+               <div className="col-lg-3">
                   <a href="#" className="single-about">
                       <div className="single-about-img">
-                          <img src="/assets/img/hasslefree.png" alt="" />
+                          <img src="/assets/img/recieveinwallet.png" alt="" />
                       </div>
                       <div className="single-about-text">
-                          <h4>Hassle Free</h4>
-                          <p>Thus Power Exchange ComputeEx will help the users on platforms of Era Swap Ecosystem to trade hassle-free with ease and comfort. Using EraSwap Tokens will further help users save additional 50% on charges to execute trades on their behalf. </p>
-                      </div>
-                  </a>
-              </div>
-              <div className="col-lg-4">
-                  <a href="#" className="single-about">
-                      <div className="single-about-img">
-                          <img src="/assets/img/smartradingbots.png" alt="" />
-                      </div>
-                      <div className="single-about-text">
-                          <h4>Smart Trading Bots</h4>
-                          <p>Trading bots, deployed using AI, will fetch the best prices from across the exchanges and will allow users to buy or sell tokens on any exchange irrespective of whether they have an account on that exchange.</p>
+                          <h4>Receive the crypto in your wallet</h4>
                       </div>
                   </a>
               </div>
@@ -134,7 +95,7 @@ function Home() {
       <div className="space-90"></div>
   </div>
 
-
+  
 
 
 
@@ -439,4 +400,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default Multiexchange;

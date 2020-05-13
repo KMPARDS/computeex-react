@@ -11,7 +11,7 @@ function Footer() {
                             <a href="#"><img src="/img/compute-ex32.png" alt="" /></a>
                         </div>
                         <div className="space-20"></div>
-                        <p>There are numerous digital asset exchanges with different rates and complications which make trading on multiple exchanges complicated. ComputeEx comes with a one stop solution to make the trading hassle free by fetching the best rates from different exchanges at once place.</p>
+                        <p>ComputeEx is a decentralized peer to peer solution, where you can trade hassle-free by fetching the best rates from different exchanges in one place. ComputeEx allows you to trade top digital assets on major exchanges,... </p>
                         <div className="space-10"></div>
                         <p>Copyright &copy; {new Date().getFullYear()}</p>
                     </div>
@@ -20,20 +20,21 @@ function Footer() {
                 <div className="col-12 col-sm-6 col-lg-2">
                     <div className="single-footer">
                         <ul>
-                            <li><a href="#">About</a></li>
-                            <li><a href="#">Token Sale</a></li>
-                            <li><a href="#">Roadmap</a></li>
-                            <li><a href="#">Contact</a></li>
+                            <li><a className="scroll" href="#about">About</a></li>
+                            <li><a onClick={() => this.props.history.push('/multiexchange')}>Multi Exchange</a></li>
+                            <li><a onClick={() => this.props.history.push('/lending')}>Lending & Borrowing</a></li>
+                            <li><a  onClick={() => this.props.history.push('/uphold')}>BTC to Es</a></li>
+                            <li><a  onClick={() => this.props.history.push('/uphold')}>Uphold</a></li>
                         </ul>
                     </div>
                 </div>
                 <div className="col-6 col-lg-2">
                     <div className="single-footer">
                         <ul>
-                            <li><a href="#">White Paper</a></li>
-                            <li><a href="#">Team</a></li>
-                            <li><a href="#">APP</a></li>
-                            <li><a href="#">FAQ</a></li>
+                            <li><a className="scroll" href="#faq">FAQ</a></li>
+                            <li><a href="https://eraswaptoken.io/pdf/eraswap_whitepaper.pdf" target="_blank">White Paper</a></li>
+                            <li><a href="terms_conditions.pdf" target="_blank">Terms & Conditions</a></li>
+                            <li><a href="privacy_policy.pdf" target="_blank">Privacy Policy </a></li>
                         </ul>
                     </div>
                 </div>
