@@ -14,6 +14,10 @@ window.ProcessParentMessage_2 = message => {
   }
 };
 
+window.onload = function(){
+  !window.opener || window.opener.postMessage("loaded","*");
+}
+
 window.addEventListener('message', function(e) {
   setTimeout(() => {
     window.ProcessParentMessage_2(e.data);

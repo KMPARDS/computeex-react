@@ -15,7 +15,7 @@ function Home() {
                           <h4>Now trade on different exchanges at one place in a Peer to Peer mode, with ComputeEx P2P Lend and Borrow</h4>
                       </div>
                       <div className="welcome-btn">
-                          <a href="https://eraswap.life/" target="_blank" className="gradient-btn v2 mr-20">Connect to wallet </a>
+                          <a onClick={() => window.open('https://eraswap.life/','','width=1001,height=650')} target="_blank" className="gradient-btn v2 mr-20">Connect to wallet </a>
                           <a href="https://eraswaptoken.io/pdf/eraswap_whitepaper.pdf" target="_blank" className="gradient-btn v2">Download Whitepaper</a>
                       </div>
                   </div>
