@@ -21,6 +21,14 @@ app.use(
 );
 app.use(bodyParser.urlencoded({ extended: true }));
 
+app.use(function (req, res, next) {
+  if (req.secure) {
+    next();
+  } else {
+    res.redirect('https://' + req.headers.host + req.url);
+  }
+});
+
 app.use((req, res, next) => {
   res.set({
     'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
@@ -39,6 +47,8 @@ app.use(
 );
 
 app.use((req, res, next) => {
+  req.session.upholdAccessToken = 'd0def949b3c9b9f38d4ec239f694c158ba45c40c';
+  req.session.upholdUserId = '532a8a5a-4336-4c9c-803a-07ea981d9916';
   console.log('\n' + req.originalUrl);
   console.log({ query: req.query, body: req.body });
   console.log('Session Id:', req.sessionID);
