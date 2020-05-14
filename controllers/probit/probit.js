@@ -5,7 +5,7 @@ const HTTP_STATUS = require('http-response-status-codes');
 const { successObj, errorObj, concertToBTCDisplay } = require('../../utils');
 const { fetchEsBtcSellOrders } = require('./utils');
 
-router.get('/es-btc-sell-orders', async(req, res) => {
+router.get('/es-btc-sell-orders', async (req, res) => {
   // if(!req.query.btcAmount) {
   //   return res.status(HTTP_STATUS.CLIENT.BAD_REQUEST).json(
   //     errorObj('Please pass btcAmount as query parameter')
