@@ -20,6 +20,7 @@ export default class extends Component {
   };
 
   intervalId = null;
+  intervalId2 = null;
 
   componentDidMount = () => {
     this.intervalId = setInterval(() => {
@@ -39,16 +40,19 @@ export default class extends Component {
       }
     })();
 
-    (async () => {
+    const updateTransactions = async () => {
       const response = await axios.get(apiBaseUrl + '/uphold/transactions');
       const transactions = response.data.response;
 
       this.setState({ transactions });
-    })();
+    };
+    updateTransactions();
+    intervalId2 = setInterval(updateTransactions, 5000);
   };
 
   componentWillUnmount = () => {
     clearInterval(this.intervalId);
+    clearInterval(this.intervalId2);
   };
 
   render = () => (
