@@ -5,41 +5,47 @@ const { apiBaseUrl } = require('../../env');
 
 export default class extends Component {
   state = {
-    userLoggedIn: false
+    userLoggedIn: false,
   };
 
   intervalId = null;
 
   componentDidMount = () => {
     this.intervalId = setInterval(() => {
-      if(window.user && !this.state.userLoggedIn) {
+      if (window.user && !this.state.userLoggedIn) {
         this.setState({ userLoggedIn: true });
-      } else if(!window.user && this.state.userLoggedIn) {
+      } else if (!window.user && this.state.userLoggedIn) {
         this.setState({ userLoggedIn: false });
       }
     }, 100);
 
-    (async() => {
+    (async () => {
       try {
         const response = await axios.get(apiBaseUrl + '/uphold/user');
         window.user = response.data.response;
       } catch (error) {}
     })();
 
-    (async() => {
+    (async () => {
       const code = window.getQueryParameter('code');
       const state = window.getQueryParameter('state');
 
-      if(code && state) {
+      if (code && state) {
         try {
-          const response = await axios.post(apiBaseUrl+'/uphold/login', window.qs({code, state}), {
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded'
+          const response = await axios.post(
+            apiBaseUrl + '/uphold/login',
+            window.qs({ code, state }),
+            {
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+              },
             }
-          });
+          );
           window.user = response.data.response;
         } catch (error) {
-          alert('Error: Your login token from Uphold is not valid. Please try again');
+          alert(
+            'Error: Your login token from Uphold is not valid. Please try again'
+          );
         }
       }
     })();
@@ -51,7 +57,13 @@ export default class extends Component {
 
   render() {
     return (
-      <div className="header-area wow fadeInDown header-absolate" id="nav" data-0="position:fixed;" data-top-top="position:fixed;top:0;" data-edge-strategy="set">
+      <div
+        className="header-area wow fadeInDown header-absolate"
+        id="nav"
+        data-0="position:fixed;"
+        data-top-top="position:fixed;top:0;"
+        data-edge-strategy="set"
+      >
         <div className="container">
           <div className="row">
             <div className="col-4 d-block d-lg-none">
@@ -59,34 +71,70 @@ export default class extends Component {
             </div>
             <div className="col-4 col-lg-2">
               <div className="logo-area">
-                <a onClick={() => this.props.history.push('/')}><img src="/img/compute-ex32.png" /></a>
+                <a onClick={() => this.props.history.push('/')}>
+                  <img src="/img/compute-ex32.png" />
+                </a>
               </div>
             </div>
             <div className="col-4 col-lg-8 d-none d-lg-block">
               <div className="main-menu text-center">
                 <nav>
                   <ul id="slick-nav">
-                   <li className="navlink-custom"><a className="scroll" href="#about">About</a></li>
+                    <li className="navlink-custom">
+                      <a className="scroll" href="#about">
+                        About
+                      </a>
+                    </li>
                     <li className="navlink-custom dropdown">
-                        <a className="nav-link dropbtn" href="#">
-                          Services
+                      <a className="nav-link dropbtn" href="#">
+                        Services
+                      </a>
+                      <div className="dropdown-content">
+                        <a
+                          onClick={() =>
+                            this.props.history.push('/multiexchange')
+                          }
+                        >
+                          Multi Exchange
                         </a>
-                              <div className="dropdown-content">
-                                  <a onClick={() => this.props.history.push('/multiexchange')}>Multi Exchange</a>
-                                  <a onClick={() => this.props.history.push('/lending')}>Lending & Borrowing</a>
-                                  <a onClick={() => this.props.history.push('/btc-to-es')}>BTC To ES</a>
-                                  <a onClick={() => this.props.history.push('/uphold')}>Uphold</a>
-                              </div>
-                      </li>
-                    <li className="navlink-custom"><a className="scroll" href="#faq">FAQ</a></li>
+                        <a onClick={() => this.props.history.push('/lending')}>
+                          Lending & Borrowing
+                        </a>
+                        <a
+                          onClick={() => this.props.history.push('/btc-to-es')}
+                        >
+                          BTC To ES
+                        </a>
+                        <a onClick={() => this.props.history.push('/uphold')}>
+                          Uphold
+                        </a>
+                      </div>
+                    </li>
+                    <li className="navlink-custom">
+                      <a className="scroll" href="#faq">
+                        FAQ
+                      </a>
+                    </li>
                   </ul>
                 </nav>
               </div>
             </div>
             <div className="col-4 col-lg-2 text-right">
-              {!this.state.userLoggedIn
-                ? <a onClick={() => this.props.history.push('/uphold')} className="btn-custom-light com-btn">Login</a>
-                : <span onClick={() => this.props.history.push('/uphold/account')} className="cursor-pointer">Welcome {window.user.firstName}</span>}
+              {!this.state.userLoggedIn ? (
+                <a
+                  onClick={() => this.props.history.push('/uphold')}
+                  className="btn-custom-light com-btn"
+                >
+                  Login
+                </a>
+              ) : (
+                <span
+                  onClick={() => this.props.history.push('/uphold')}
+                  className="cursor-pointer"
+                >
+                  Welcome {window.user.firstName}
+                </span>
+              )}
             </div>
           </div>
         </div>
