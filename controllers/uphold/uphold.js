@@ -110,14 +110,16 @@ router.post('/login', async (req, res) => {
   console.log({ code: req.body.code });
   let auth;
   try {
+    console.log('tring to authorize');
     auth = await sdk.authorize(req.body.code);
+    console.log('authorized', auth);
   } catch (error) {
-    console.log(error);
+    console.log('error while authorizing', error);
     return res
       .status(HTTP_STATUS.CLIENT.UNAUTHORIZED)
       .json(errorObj(error.message));
   }
-  console.log({ auth });
+  console.log('after try catch block');
   req.session.upholdAccessToken = auth.access_token;
   console.log({ session: req.session });
   await sdk.setToken({
