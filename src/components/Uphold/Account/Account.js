@@ -47,7 +47,7 @@ export default class extends Component {
       this.setState({ transactions });
     };
     updateTransactions();
-    intervalId2 = setInterval(updateTransactions, 5000);
+    this.intervalId2 = setInterval(updateTransactions, 5000);
   };
 
   componentWillUnmount = () => {
