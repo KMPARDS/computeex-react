@@ -8,12 +8,18 @@ const upholdModel = require('../../models/uphold/uphold');
 const { fetchEsBtcSellOrders, getEsAmountFromBTC } = require('../probit/utils');
 
 const { default: SDK } = require('@uphold/uphold-sdk-javascript');
-const generateSdk = () =>
-  new SDK({
+const generateSdk = () => {
+  console.log('generateSdk', {
     baseUrl: process.env.UPHOLD_BASE_URL,
     clientId: process.env.UPHOLD_CLIENT_ID,
     clientSecret: process.env.UPHOLD_CLIENT_SECRET,
   });
+  return new SDK({
+    baseUrl: process.env.UPHOLD_BASE_URL,
+    clientId: process.env.UPHOLD_CLIENT_ID,
+    clientSecret: process.env.UPHOLD_CLIENT_SECRET,
+  });
+};
 
 const requiresLogin = async (req, res, next) => {
   if (!req.session.upholdAccessToken) {
@@ -106,6 +112,7 @@ router.post('/login', async (req, res) => {
   try {
     auth = await sdk.authorize(req.body.code);
   } catch (error) {
+    console.log(error);
     return res
       .status(HTTP_STATUS.CLIENT.UNAUTHORIZED)
       .json(errorObj(error.message));
@@ -146,6 +153,8 @@ router.get('/cards', requiresLogin, async (req, res) => {
   if (cards.itemsCount > 100) {
     cards = await sdk.getCards(1, cards.itemsCount);
   }
+
+  console.log({ cards });
 
   res.status(HTTP_STATUS.SUCCESS.ACCEPTED).json(
     successObj(
