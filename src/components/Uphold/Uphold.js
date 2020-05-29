@@ -222,7 +222,7 @@ export default class extends Component {
                   <p>To proceed, connect your Uphold Account with ComputeEx.</p>
                   <img onClick={async() => {
                     const response = await axios.get(apiBaseUrl+'/uphold/generate-state');
-                    window.open(`https://uphold.com/authorize/73013f068206b13aa8dba28a297cc3817f17edac?scope=accounts:read%20cards:read%20cards:write%20transactions:deposit%20transactions:read%20transactions:transfer:application%20transactions:transfer:others%20transactions:commit:otp%20user:read&state=${response.data.response}`,"_self");
+                    window.open(`${process.env.REACT_APP_ENV === 'development' ? 'https://sandbox.uphold.com/authorize/${upholdClientId}?scope=accounts:read%20cards:read%20cards:write%20transactions:deposit%20transactions:read%20transactions:transfer:application%20transactions:transfer:others%20transactions:transfer:self%20transactions:withdraw%20transactions:commit:otp%20user:read':'https://uphold.com/authorize/73013f068206b13aa8dba28a297cc3817f17edac?scope=accounts:read%20cards:read%20cards:write%20transactions:deposit%20transactions:read%20transactions:transfer:application%20transactions:transfer:others%20transactions:commit:otp%20user:read'}&state=${response.data.response}`,"_self");
                     }} src="/img/connect_with_uphold.svg"
                   />
                 </> : <a onClick={async() => {
