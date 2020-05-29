@@ -42,6 +42,7 @@ export default class extends Component {
             }
           );
           window.user = response.data.response;
+          this.props.history.push('/uphold');
         } catch (error) {
           alert(
             'Error: Your login token from Uphold is not valid. Please try again'
