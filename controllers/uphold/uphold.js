@@ -119,7 +119,10 @@ router.post('/login', async (req, res) => {
       .status(HTTP_STATUS.CLIENT.UNAUTHORIZED)
       .json(errorObj(error.message));
   }
-  console.log('after try catch block');
+  console.log(
+    'after try catch block, setting upholdAccessToken',
+    auth.access_token
+  );
   req.session.upholdAccessToken = auth.access_token;
   console.log({ session: req.session });
   await sdk.setToken({
