@@ -145,88 +145,102 @@ router.get('/user', requiresLogin, async (req, res) => {
 });
 
 router.get('/cards', requiresLogin, async (req, res) => {
-  const sdk = generateSdk();
+  try {
+    const sdk = generateSdk();
 
-  await sdk.setToken({
-    access_token: req.session.upholdAccessToken,
-  });
+    await sdk.setToken({
+      access_token: req.session.upholdAccessToken,
+    });
 
-  let cards = await sdk.getCards(1, 100);
-  if (cards.itemsCount > 100) {
-    cards = await sdk.getCards(1, cards.itemsCount);
+    let cards = await sdk.getCards(1, 100);
+    if (cards.itemsCount > 100) {
+      cards = await sdk.getCards(1, cards.itemsCount);
+    }
+
+    console.log({ cards });
+
+    res.status(HTTP_STATUS.SUCCESS.ACCEPTED).json(
+      successObj(
+        cards.items.map((card) => {
+          const { available, balance, currency, id, label } = card;
+          return {
+            available,
+            balance,
+            currency,
+            id,
+            label,
+          };
+        })
+      )
+    );
+  } catch (error) {
+    console.log('cards error', error);
+    return res
+      .status(HTTP_STATUS.SERVER.INTERNAL_SERVER_ERROR)
+      .json(errorObj(error.message));
   }
-
-  console.log({ cards });
-
-  res.status(HTTP_STATUS.SUCCESS.ACCEPTED).json(
-    successObj(
-      cards.items.map((card) => {
-        const { available, balance, currency, id, label } = card;
-        return {
-          available,
-          balance,
-          currency,
-          id,
-          label,
-        };
-      })
-    )
-  );
 });
 
 router.post('/create-transaction', requiresLogin, async (req, res) => {
-  const sdk = generateSdk();
-  await sdk.setToken({
-    access_token: req.session.upholdAccessToken,
-  });
-  const user = await sdk.getMe();
-  const walletAddress = await upholdModel.getWalletAddress(
-    req.session.upholdUserId
-  );
+  try {
+    const sdk = generateSdk();
+    await sdk.setToken({
+      access_token: req.session.upholdAccessToken,
+    });
+    const user = await sdk.getMe();
+    const walletAddress = await upholdModel.getWalletAddress(
+      req.session.upholdUserId
+    );
 
-  if (!walletAddress) {
+    if (!walletAddress) {
+      return res
+        .status(HTTP_STATUS.CLIENT.FORBIDDEN)
+        .json(
+          errorObj(
+            'Please save a wallet address to proceed with ES purchase transaction'
+          )
+        );
+    }
+
+    const { cardId, amount, currency } = req.body;
+
+    const [from, to] = [cardId, process.env.UPHOLD_PAYMENT_RECEIVING_CARD];
+
+    const upholdTransactionObject = await sdk.createCardTransaction(from, {
+      amount: amount,
+      currency: currency,
+      destination: to,
+      message: 'Buy ES',
+      // securityCode
+    });
+
+    console.log(upholdTransactionObject);
+
+    // generate ES amount
+    const orderBook = await fetchEsBtcSellOrders();
+    const esAmount = getEsAmountFromBTC(
+      upholdTransactionObject.destination.amount,
+      orderBook
+    );
+    console.log({ esAmount });
+    const args = {
+      userId: req.session.upholdUserId,
+      upholdTransactionObject,
+      esAmount,
+      walletAddress,
+    };
+
+    await upholdModel.insertTransaction(...Object.values(args));
+
+    res
+      .status(HTTP_STATUS.SUCCESS.OK)
+      .json(successObj(upholdTransactionObject.id));
+  } catch (error) {
+    console.log('create-tx error', error);
     return res
-      .status(HTTP_STATUS.CLIENT.FORBIDDEN)
-      .json(
-        errorObj(
-          'Please save a wallet address to proceed with ES purchase transaction'
-        )
-      );
+      .status(HTTP_STATUS.SERVER.INTERNAL_SERVER_ERROR)
+      .json(errorObj(error.message));
   }
-
-  const { cardId, amount, currency } = req.body;
-
-  const [from, to] = [cardId, process.env.UPHOLD_PAYMENT_RECEIVING_CARD];
-
-  const upholdTransactionObject = await sdk.createCardTransaction(from, {
-    amount: amount,
-    currency: currency,
-    destination: to,
-    message: 'Buy ES',
-    // securityCode
-  });
-
-  console.log(upholdTransactionObject);
-
-  // generate ES amount
-  const orderBook = await fetchEsBtcSellOrders();
-  const esAmount = getEsAmountFromBTC(
-    upholdTransactionObject.destination.amount,
-    orderBook
-  );
-  console.log({ esAmount });
-  const args = {
-    userId: req.session.upholdUserId,
-    upholdTransactionObject,
-    esAmount,
-    walletAddress,
-  };
-
-  await upholdModel.insertTransaction(...Object.values(args));
-
-  res
-    .status(HTTP_STATUS.SUCCESS.OK)
-    .json(successObj(upholdTransactionObject.id));
 });
 
 router.get('/transaction', requiresLogin, async (req, res) => {
@@ -278,6 +292,7 @@ router.post('/commit-transaction', requiresLogin, async (req, res) => {
 
     res.status(HTTP_STATUS.SUCCESS.OK).json(successObj(output));
   } catch (error) {
+    console.log('commit-tx error', error);
     return res
       .status(HTTP_STATUS.CLIENT.BAD_REQUEST)
       .json(errorObj(error.message));
