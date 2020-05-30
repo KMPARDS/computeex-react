@@ -105,9 +105,11 @@ export default class extends Component {
       try {
         while (1) {
           await window.wait(1000);
+          console.log('cards trying');
           if (window.user) {
             const response = await axios.get(apiBaseUrl + '/uphold/cards');
             this.setState({ cards: response.data.response });
+            console.log('cards updated');
             break;
           }
         }
