@@ -309,6 +309,15 @@ export default class extends Component {
                           })[0];
 
                           const newState = { creatingTransaction: false };
+
+                          if (+card.available < this.state.inputAmount) {
+                            this.setState(newState);
+                            alert(
+                              `Your available funds on ${card.label} are ${card.available} ${card.currency}. You can topup this card using a credit/debit card by going to uphold.com.`
+                            );
+                            return;
+                          }
+
                           try {
                             const response = await axios.post(
                               apiBaseUrl + '/uphold/create-transaction',
