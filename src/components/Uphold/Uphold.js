@@ -102,18 +102,18 @@ export default class extends Component {
     })();
 
     (async () => {
-      try {
-        while (1) {
-          await window.wait(1000);
-          console.log('cards trying');
-          if (window.user) {
+      while (1) {
+        await window.wait(1000);
+        console.log('cards trying');
+        if (window.user) {
+          try {
             const response = await axios.get(apiBaseUrl + '/uphold/cards');
             this.setState({ cards: response.data.response });
             console.log('cards updated');
             break;
-          }
+          } catch {}
         }
-      } catch (error) {}
+      }
     })();
 
     this.updateEsAmount();
