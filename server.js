@@ -41,9 +41,10 @@ app.use((req, res, next) => {
 app.use(
   session({
     secret: process.env.SESSION_SECRET || '123456789',
-    resave: true,
+    resave: false,
     saveUninitialized: true,
     cookie: {
+      secure: false,
       maxAge: 36000000,
       httpOnly: false,
     },
