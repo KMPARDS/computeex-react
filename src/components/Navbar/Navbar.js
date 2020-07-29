@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
-import axios from '../../axios';
+import React, { Component } from "react";
+import axios from "../../axios";
 
-const { apiBaseUrl } = require('../../env');
+const { apiBaseUrl } = require("../../env");
 
 export default class extends Component {
   state = {
@@ -21,31 +21,31 @@ export default class extends Component {
 
     (async () => {
       try {
-        const response = await axios.get(apiBaseUrl + '/uphold/user');
+        const response = await axios.get(apiBaseUrl + "/uphold/user");
         window.user = response.data.response;
       } catch (error) {}
     })();
 
     (async () => {
-      const code = window.getQueryParameter('code');
-      const state = window.getQueryParameter('state');
+      const code = window.getQueryParameter("code");
+      const state = window.getQueryParameter("state");
 
       if (code && state) {
         try {
           const response = await axios.post(
-            apiBaseUrl + '/uphold/login',
+            apiBaseUrl + "/uphold/login",
             window.qs({ code, state }),
             {
               headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
+                "Content-Type": "application/x-www-form-urlencoded",
               },
             }
           );
           window.user = response.data.response;
-          this.props.history.push('/uphold');
+          this.props.history.push("/uphold");
         } catch (error) {
           alert(
-            'Error: Your login token from Uphold is not valid. Please try again'
+            "Error: Your login token from Uphold is not valid. Please try again"
           );
         }
       }
@@ -72,7 +72,7 @@ export default class extends Component {
             </div>
             <div className="col-4 col-lg-2">
               <div className="logo-area">
-                <a onClick={() => this.props.history.push('/')}>
+                <a onClick={() => this.props.history.push("/")}>
                   <img src="/img/compute-ex32.png" />
                 </a>
               </div>
@@ -93,20 +93,20 @@ export default class extends Component {
                       <div className="dropdown-content">
                         <a
                           onClick={() =>
-                            this.props.history.push('/multiexchange')
+                            this.props.history.push("/multiexchange")
                           }
                         >
                           Multi Exchange
                         </a>
-                        <a onClick={() => this.props.history.push('/lending')}>
+                        <a onClick={() => this.props.history.push("/lending")}>
                           Lending & Borrowing
                         </a>
                         <a
-                          onClick={() => this.props.history.push('/btc-to-es')}
+                          onClick={() => this.props.history.push("/btc-to-es")}
                         >
                           BTC To ES
                         </a>
-                        <a onClick={() => this.props.history.push('/uphold')}>
+                        <a onClick={() => this.props.history.push("/uphold")}>
                           Uphold
                         </a>
                       </div>
@@ -123,14 +123,14 @@ export default class extends Component {
             <div className="col-4 col-lg-2 text-right">
               {!this.state.userLoggedIn ? (
                 <a
-                  onClick={() => this.props.history.push('/uphold')}
+                  onClick={() => this.props.history.push("/uphold")}
                   className="btn-custom-light com-btn"
                 >
                   Login
                 </a>
               ) : (
                 <span
-                  onClick={() => this.props.history.push('/uphold')}
+                  onClick={() => this.props.history.push("/uphold")}
                   className="cursor-pointer"
                 >
                   Welcome {window.user.firstName}
