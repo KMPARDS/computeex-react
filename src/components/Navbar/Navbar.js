@@ -70,7 +70,7 @@ export default class extends Component {
             <div className="col-4 d-block d-lg-none">
               <div className="mobile-menu"></div>
             </div>
-            <div className="col-4 col-lg-2">
+            <div className="col-3 col-lg-2">
               <div className="logo-area">
                 <a onClick={() => this.props.history.push("/")}>
                   <img src="/img/compute-ex32.png" />
@@ -88,7 +88,7 @@ export default class extends Component {
                     </li>
                     <li className="navlink-custom dropdown">
                       <a className="nav-link dropbtn" href="#">
-                        Services
+                        Services <i class="fa fa-angle-down" aria-hidden="true"></i>
                       </a>
                       <div className="dropdown-content">
                         <a
@@ -116,11 +116,62 @@ export default class extends Component {
                         FAQ
                       </a>
                     </li>
+                    <li className="navlink-custom">
+                      <a onClick={() => this.props.history.push("/Orders")}>
+                      Orders
+                      </a>
+                    </li>
+                    
                   </ul>
                 </nav>
               </div>
             </div>
-            <div className="col-4 col-lg-2 text-right">
+            <div className="col-5 col-lg-2 text-right">
+                  {/* <a onClick={() => this.props.history.push("/Orders")} className="mr10">
+                    <i class="fa fa-bell-o text-light" aria-hidden="true"></i> 
+
+                  </a> */}
+                   <div className="navlink-custom dropdown">
+                      <a className="nav-link dropbtn" href="#">
+                      <i class="fa fa-bell-o text-light" aria-hidden="true"></i> 
+                      </a>
+                      <div className="dropdown-content nofication-dropdown">
+                        <div className="not-topbar">0 Notification</div>
+                        <div className="scrollbar">
+                                    <a
+                                    onClick={() =>
+                                      this.props.history.push("/multiexchange")
+                                    }
+                                  >
+                                    <p >
+                                      There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable
+                                    </p>
+                                    <small>4 days ago</small>
+                                  </a>
+                                  <a onClick={() => this.props.history.push("/lending")}>
+                                    <p >
+                                      There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable
+                                    </p>
+                                    <small>4 days ago</small>
+                                  </a>
+                                  <a
+                                    onClick={() => this.props.history.push("/btc-to-es")}
+                                  >
+                                    <p >
+                                      There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable
+                                    </p>
+                                    <small>4 days ago</small>
+                                  </a>
+                                  <a onClick={() => this.props.history.push("/uphold")}>
+                                  <p >
+                                      There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable
+                                    </p>
+                                    <small>4 days ago</small>
+                                  </a>
+                        </div>
+                      </div>
+                    </div> 
+                  
               {!this.state.userLoggedIn ? (
                 <a
                   onClick={() => this.props.history.push("/uphold")}

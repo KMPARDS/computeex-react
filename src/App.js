@@ -7,8 +7,8 @@ import Uphold from './components/Uphold/Uphold';
 import BtcToEs from './components/BtcToEs/BtcToEs';
 import Lending from './components/Lending/Lending';
 import Multiexchange from './components/Multiexchange/Multiexchange';
-
-
+import Orders from './components/Orders/Orders';
+import Exchange from './components/Exchange/Exchange';
 import './App.css';
 import './custom.css';
 
@@ -22,6 +22,8 @@ function App() {
         <Route path="/btc-to-es" exact component={BtcToEs} />
         <Route path="/lending" exact component={Lending} />
         <Route path="/multiexchange" exact component={Multiexchange} />
+        <Route path="/orders" exact component={Orders} />
+        <Route path="/Exchange" exact component={Exchange} />
       </Switch>
       <Route path="/*" component={Footer} />
     </BrowserRouter>

@@ -13,57 +13,190 @@ import {
   Card,
   Tabs,
   Tab,
+  Table,
+  Form,
   Sonnet,
 } from "react-bootstrap";
 
 function Multiexchange() {
   return (
     <>
-      <div className="welcome-area wow fadeInUp" id="about">
-        <div id="particles-js"></div>
+      <div className="section-padding about-area wow fadeInUp">
+        <div className="space-30"></div>
         <div className="container">
           <div className="row">
-            <div className="col-12 col-md-6 align-self-center">
-              <div className="welcome-right">
-                <div className="welcome-text">
-                  <h5>Multi Exchange</h5>
-                  <h1>Smart Contract</h1>
-                  <h4>
-                    ComputeEx will use smart contract on the platform so that
-                    neither buyers nor sellers have to trust or know each other
-                    to conduct transaction freely.{" "}
-                  </h4>
-                </div>
-                <div className="welcome-btn">
-                  <a
-                    href="https://eraswap.life/"
-                    target="_blank"
-                    className="gradient-btn v2 mr-20"
-                  >
-                    Connect to wallet{" "}
-                  </a>
-                  <a
-                    href="https://eraswaptoken.io/pdf/eraswap_whitepaper.pdf"
-                    target="_blank"
-                    className="gradient-btn v2"
-                  >
-                    Download Whitepaper
-                  </a>
-                </div>
+            <div className="col-12 text-center">
+              <div className="heading">
+                <h5>Multi Exchange Smart Contrac</h5>
+                <div className="space-10"></div>
+
+                <p>
+                  ComputeEx Will Use Smart Contract On The Platform So That
+                  Neither Buyers
+                  <br />
+                  Nor Sellers Have To Trust Or Know Each Other To Conduct
+                  Transaction Freely
+                </p>
               </div>
             </div>
-            <div className="col-12 col-md-6">
-              <div className="welcome-img">
-                <img
-                  src="/assets/img/smartcontract1.png"
-                  alt=""
-                  classname="mar-left"
-                />
-              </div>
+            <div className="col-12 text-center mt20 multiexchange-box">
+              <Tabs
+                defaultActiveKey="insta"
+                className="maintab"
+                id="uncontrolled-tab-example"
+              >
+                <Tab eventKey="insta" title="INSTA-EXCHANGE">
+                  <div className="tabcontent-box">
+                         <Form>
+                          <Form.Row className="align-items-center">
+                            <Col md="4">
+                              <small>1 ERASWAP = 0.000215 BTC</small>
+                              <div className="input-group multiselinput">
+                                  <span class="inputsmall">You send</span>
+                                  <input placeholder="Enter amount" className="form-input light large form-control" value="0.1"/>
+                                  <div className="large light dropdown input-group-append">
+                                  <span class="inputsmall">Era Swap</span>
+                                    <button aria-haspopup="true" aria-expanded="false" type="button" className="dropdown-toggle btn btn-outline-secondary">ES</button>
+                                  </div>
+                              </div>
+                            </Col>
+                            <Col md="4">
+                               <small>0.000215 BTC  = 1 ERASWAP </small>
+                              <div className="input-group multiselinput">
+                                  <span class="inputsmall">You send</span>
+                                  <input placeholder="Enter amount" className="form-input light large form-control" value="0.1"/>
+                                  <div className="large light dropdown input-group-append">
+                                  <span class="inputsmall">BitCoin</span>
+                                    <button aria-haspopup="true" aria-expanded="false" type="button" className="dropdown-toggle btn btn-outline-secondary">BTC</button>
+                                  </div>
+                              </div>
+                            </Col>
+                            
+                            <Col md="4">
+                                <a  href="/Exchange" className="mb-2 btn btn-lg multtab-btn btn-block  yel-btn">
+                                  EXCHANGE NOW
+                              </a>
+                            </Col>
+                          </Form.Row>
+                        </Form>
+                  
+                  </div>
+                </Tab>
+                <Tab eventKey="bid" title="BID & TRADE">
+                  <div className="tabcontent-box">
+                         <Form>
+                          <Form.Row className="align-items-center">
+                            <Col md="4">
+                              <small>1 ERASWAP = 0.000215 BTC</small>
+                              <div className="input-group multiselinput">
+                                  <span class="inputsmall">You send</span>
+                                  <input placeholder="Enter amount" className="form-input light large form-control" value="0.1"/>
+                                  <div className="large light dropdown input-group-append">
+                                  <span class="inputsmall">Era Swap</span>
+                                    <button aria-haspopup="true" aria-expanded="false" type="button" className="dropdown-toggle btn btn-outline-secondary">ES</button>
+                                  </div>
+                              </div>
+                            </Col>
+                            <Col md="4">
+                               <small>0.000215 BTC  = 1 ERASWAP </small>
+                              <div className="input-group multiselinput">
+                                  <span class="inputsmall">You send</span>
+                                  <input placeholder="Enter amount" className="form-input light large form-control" value="0.1"/>
+                                  <div className="large light dropdown input-group-append">
+                                  <span class="inputsmall">BitCoin</span>
+                                    <button aria-haspopup="true" aria-expanded="false" type="button" className="dropdown-toggle btn btn-outline-secondary">BTC</button>
+                                  </div>
+                              </div>
+                            </Col>
+                            
+                            <Col md="4">
+                              <a  href="/Exchange"  className="mb-2 btn btn-lg multtab-btn btn-block yel-btn">
+                                  EXCHANGE NOW
+                              </a>
+                            </Col>
+                          </Form.Row>
+                        </Form>
+                        </div>
+               
+                </Tab>
+              </Tabs>
             </div>
           </div>
         </div>
       </div>
+
+
+
+      <div className=" wow fadeInUp multi-works">
+        <div className="container">
+          <div className="row">
+            
+            <div className="col-lg-4">
+              <div className="single-about graphbox">
+                    <div className="flex-eraswap">
+                      <img  className="escolor-pic1" src="/assets/img/favicon.png" width="15px" alt="" />
+                      <div className="single-about-text text-left" >
+                          <p className="era-head">Era Swap </p>
+                          <p className="era-prize">$ 0.0963</p>
+                      </div>
+                    </div>
+                    <div className="flex-eraswap mt30 mb20">
+                      <div className="single-about-text text-left">
+                           <p className="era-percentage">-2.75%</p>
+                          <p className="era-note">24 Hour Chnage</p>
+                      </div>
+                    </div>
+                    <Button type="submit" className=" btn btn-lg  btn-block btn-custom-light com-btn yel-border">
+                        BUY NOW
+                    </Button>
+              </div>
+            </div>
+            <div className="col-lg-4">
+              <div className="single-about graphbox">
+                    <div className="flex-eraswap">
+                      <img  className="escolor-pic1" src="/assets/img/ethereum.png" width="15px" alt="" />
+                      <div className="single-about-text text-left">
+                          <p className="era-head">Ethereum </p>
+                          <p className="era-prize">$381.32</p>
+                      </div>
+                    </div>
+                    <div className="flex-eraswap mt30 mb20">
+                      <div className="single-about-text text-left">
+                           <p className="era-percentage">-2.71%</p>
+                          <p className="era-note">24 Hour Chnage</p>
+                      </div>
+                    </div>
+                    <Button type="" className=" btn btn-lg  btn-block btn-custom-light com-btn yel-border">
+                        BUY NOW
+                    </Button>
+              </div>
+            </div>
+            <div className="col-lg-4">
+               <div className="single-about graphbox">
+                    <div className="flex-eraswap">
+                      <img  className="escolor-pic1" src="/assets/img/xrp.png" width="15px" alt="" />
+                      <div className="single-about-text text-left">
+                          <p className="era-head">XRP</p>
+                          <p className="era-prize">$0.28</p>
+                          
+                      </div>
+                    </div>
+                    <div className="flex-eraswap mt30 mb20">
+                      <div className="single-about-text text-left">
+                           <p className="era-percentage">-1.03%</p>
+                          <p className="era-note">24 Hour Chnage</p>
+                      </div>
+                    </div>
+                    <Button type="" className=" btn btn-lg  btn-block btn-custom-light com-btn yel-border">
+                        BUY NOW
+                    </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+
 
       <div className="section-padding about-area wow fadeInUp">
         <div className="space-30"></div>
